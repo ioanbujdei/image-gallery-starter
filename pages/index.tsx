@@ -94,8 +94,8 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
 </div>
       </main>
       
-      <footer className="p-6 text-center text-white/80 sm:p-12">
-        Alpha01 Exhibition Portfolio
+<footer className="p-6 text-center text-white/80 sm:p-12">
+        A project of the Paul-talk Discord server.
       </footer>
     </>
   );
