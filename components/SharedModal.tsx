@@ -54,13 +54,14 @@ export default function SharedModal({
         opacity: { duration: 0.2 },
       }}
     >
+      {/* Main Container: Changed to h-full and added lg:flex-row for the side panel */}
       <div
-        className="relative z-50 flex aspect-[3/2] w-full max-w-7xl items-center wide:h-full xl:taller-than-854:h-auto"
+        className="relative z-50 flex h-full w-full max-w-7xl flex-col lg:flex-row items-center justify-center overflow-hidden"
         {...handlers}
       >
-        {/* Main image */}
-        <div className="w-full overflow-hidden">
-          <div className="relative flex aspect-[3/2] items-center justify-center">
+        {/* Left Side: The Image (takes 75% width on desktop) */}
+        <div className="relative flex-grow h-full w-full lg:w-3/4 overflow-hidden flex items-center justify-center p-4">
+          <div className="relative h-full w-full">
             <AnimatePresence initial={false} custom={direction}>
               <motion.div
                 key={index}
@@ -69,7 +70,7 @@ export default function SharedModal({
                 initial="enter"
                 animate="center"
                 exit="exit"
-                className="absolute"
+                className="absolute inset-0"
               >
                 <Image
                   src={`https://res.cloudinary.com/${
@@ -77,140 +78,77 @@ export default function SharedModal({
                   }/image/upload/c_scale,${navigation ? "w_1280" : "w_1920"}/${
                     currentImage.public_id
                   }.${currentImage.format}`}
-                  width={navigation ? 1280 : 1920}
-                  height={navigation ? 853 : 1280}
+                  fill
                   priority
-                  alt="Next.js Conf image"
+                  alt="Gallery image"
+                  className="object-contain" // This ensures the image is never bigger than the screen
                   onLoad={() => setLoaded(true)}
                 />
               </motion.div>
             </AnimatePresence>
           </div>
+          
+          {/* Navigation Buttons (kept over the image area) */}
+          {loaded && navigation && (
+            <>
+              {index > 0 && (
+                <button
+                  className="absolute left-6 z-50 rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
+                  onClick={() => changePhotoId(index - 1)}
+                >
+                  <ChevronLeftIcon className="h-6 w-6" />
+                </button>
+              )}
+              {index + 1 < images.length && (
+                <button
+                  className="absolute right-6 z-50 rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
+                  onClick={() => changePhotoId(index + 1)}
+                >
+                  <ChevronRightIcon className="h-6 w-6" />
+                </button>
+              )}
+            </>
+          )}
         </div>
 
-        {/* Buttons + bottom nav bar */}
-        <div className="absolute inset-0 mx-auto flex max-w-7xl items-center justify-center">
-          {/* Buttons */}
-          {loaded && (
-            <div className="relative aspect-[3/2] max-h-full w-full">
-              {navigation && (
-                <>
-                  {index > 0 && (
-                    <button
-                      className="absolute left-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
-                      style={{ transform: "translate3d(0, 0, 0)" }}
-                      onClick={() => changePhotoId(index - 1)}
-                    >
-                      <ChevronLeftIcon className="h-6 w-6" />
-                    </button>
-                  )}
-                  {index + 1 < images.length && (
-                    <button
-                      className="absolute right-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
-                      style={{ transform: "translate3d(0, 0, 0)" }}
-                      onClick={() => changePhotoId(index + 1)}
-                    >
-                      <ChevronRightIcon className="h-6 w-6" />
-                    </button>
-                  )}
-                </>
-              )}
-              <div className="absolute top-0 right-0 flex items-center gap-2 p-3 text-white">
-                {navigation ? (
-                  <a
-                    href={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${currentImage.public_id}.${currentImage.format}`}
-                    className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
-                    target="_blank"
-                    title="Open fullsize version"
-                    rel="noreferrer"
-                  >
-                    <ArrowTopRightOnSquareIcon className="h-5 w-5" />
-                  </a>
-                ) : (
-                  <a
-                    href={`https://twitter.com/intent/tweet?text=Check%20out%20this%20pic%20from%20Next.js%20Conf!%0A%0Ahttps://nextjsconf-pics.vercel.app/p/${index}`}
-                    className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
-                    target="_blank"
-                    title="Open fullsize version"
-                    rel="noreferrer"
-                  >
-                    <Twitter className="h-5 w-5" />
-                  </a>
-                )}
-                <button
-                  onClick={() =>
-                    downloadPhoto(
-                      `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${currentImage.public_id}.${currentImage.format}`,
-                      `${index}.jpg`,
-                    )
-                  }
-                  className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
-                  title="Download fullsize version"
-                >
-                  <ArrowDownTrayIcon className="h-5 w-5" />
-                </button>
+        {/* Right Side: The Details Panel (takes 25% width on desktop) */}
+        <div className="h-full w-full lg:w-1/4 bg-black/20 lg:bg-black/40 backdrop-blur-xl p-8 flex flex-col text-white border-t lg:border-t-0 lg:border-l border-white/10">
+          <div className="flex-grow">
+            <h2 className="text-2xl font-bold tracking-tight">Painting Details</h2>
+            <div className="mt-8 space-y-6">
+              <div>
+                <h3 className="text-xs uppercase tracking-widest text-white/50">Artist</h3>
+                <p className="text-lg font-medium mt-1">Placeholder Artist Name</p>
               </div>
-              <div className="absolute top-0 left-0 flex items-center gap-2 p-3 text-white">
-                <button
-                  onClick={() => closeModal()}
-                  className="rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
-                >
-                  {navigation ? (
-                    <XMarkIcon className="h-5 w-5" />
-                  ) : (
-                    <ArrowUturnLeftIcon className="h-5 w-5" />
-                  )}
-                </button>
+              <div>
+                <h3 className="text-xs uppercase tracking-widest text-white/50">Medium & Year</h3>
+                <p className="text-base mt-1">Oil on Canvas, 2024</p>
+              </div>
+              <div>
+                <h3 className="text-xs uppercase tracking-widest text-white/50">Description</h3>
+                <p className="text-sm text-white/70 leading-relaxed mt-2">
+                  This is a placeholder description for the painting. You can add unique descriptions by updating your Cloudinary metadata or adding a local JSON file with data mapped to the Image ID.
+                </p>
               </div>
             </div>
-          )}
-          {/* Bottom Nav bar */}
-          {navigation && (
-            <div className="fixed inset-x-0 bottom-0 z-40 overflow-hidden bg-gradient-to-b from-black/0 to-black/60">
-              <motion.div
-                initial={false}
-                className="mx-auto mt-6 mb-6 flex aspect-[3/2] h-14"
-              >
-                <AnimatePresence initial={false}>
-                  {filteredImages.map(({ public_id, format, id }) => (
-                    <motion.button
-                      initial={{
-                        width: "0%",
-                        x: `${Math.max((index - 1) * -100, 15 * -100)}%`,
-                      }}
-                      animate={{
-                        scale: id === index ? 1.25 : 1,
-                        width: "100%",
-                        x: `${Math.max(index * -100, 15 * -100)}%`,
-                      }}
-                      exit={{ width: "0%" }}
-                      onClick={() => changePhotoId(id)}
-                      key={id}
-                      className={`${
-                        id === index
-                          ? "z-20 rounded-md shadow shadow-black/50"
-                          : "z-10"
-                      } ${id === 0 ? "rounded-l-md" : ""} ${
-                        id === images.length - 1 ? "rounded-r-md" : ""
-                      } relative inline-block w-full shrink-0 transform-gpu overflow-hidden focus:outline-none`}
-                    >
-                      <Image
-                        alt="small photos on the bottom"
-                        width={180}
-                        height={120}
-                        className={`${
-                          id === index
-                            ? "brightness-110 hover:brightness-110"
-                            : "brightness-50 contrast-125 hover:brightness-75"
-                        } h-full transform object-cover transition`}
-                        src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_scale,w_180/${public_id}.${format}`}
-                      />
-                    </motion.button>
-                  ))}
-                </AnimatePresence>
-              </motion.div>
-            </div>
-          )}
+          </div>
+
+          {/* Action Buttons (moved to bottom of panel) */}
+          <div className="mt-8 flex items-center gap-3">
+             <button
+              onClick={() => closeModal()}
+              className="flex-grow rounded-md bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/20 transition"
+            >
+              {navigation ? "Close" : "Go Back"}
+            </button>
+            <button
+              onClick={() => downloadPhoto(`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${currentImage.public_id}.${currentImage.format}`, `${index}.jpg`)}
+              className="rounded-md bg-white p-2 text-black hover:bg-white/90 transition"
+              title="Download"
+            >
+              <ArrowDownTrayIcon className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </div>
     </MotionConfig>
