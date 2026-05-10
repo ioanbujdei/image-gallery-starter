@@ -111,45 +111,45 @@ export default function SharedModal({
           )}
         </div>
 
-        {/* Right Side: The Details Panel (takes 25% width on desktop) */}
-        <div className="h-full w-full lg:w-1/4 bg-black/20 lg:bg-black/40 backdrop-blur-xl p-8 flex flex-col text-white border-t lg:border-t-0 lg:border-l border-white/10">
-          <div className="flex-grow">
-            <h2 className="text-2xl font-bold tracking-tight">Painting Details</h2>
-            <div className="mt-8 space-y-6">
-              <div>
-                <h3 className="text-xs uppercase tracking-widest text-white/50">Artist</h3>
-                <p className="text-lg font-medium mt-1">Placeholder Artist Name</p>
-              </div>
-              <div>
-                <h3 className="text-xs uppercase tracking-widest text-white/50">Medium & Year</h3>
-                <p className="text-base mt-1">Oil on Canvas, 2024</p>
-              </div>
-              <div>
-                <h3 className="text-xs uppercase tracking-widest text-white/50">Description</h3>
-                <p className="text-sm text-white/70 leading-relaxed mt-2">
-                  This is a placeholder description for the painting. You can add unique descriptions by updating your Cloudinary metadata or adding a local JSON file with data mapped to the Image ID.
-                </p>
-              </div>
-            </div>
-          </div>
+      {/* Right Side: The Details Panel (takes 25% width on desktop) */}
+<div className="h-auto lg:h-full w-full lg:w-1/4 bg-black/20 lg:bg-black/40 backdrop-blur-xl p-6 lg:p-8 flex flex-col text-white border-t lg:border-t-0 lg:border-l border-white/10">
+  <div className="flex-grow">
+    <h2 className="text-xl lg:text-2xl font-bold tracking-tight">Painting Details</h2>
+    <div className="mt-4 lg:mt-8 space-y-4 lg:space-y-6">
+      <div>
+        <h3 className="text-[10px] lg:text-xs uppercase tracking-widest text-white/50">Artist</h3>
+        <p className="text-base lg:text-lg font-medium mt-1">Placeholder Artist Name</p>
+      </div>
+      <div>
+        <h3 className="text-[10px] lg:text-xs uppercase tracking-widest text-white/50">Medium & Year</h3>
+        <p className="text-sm lg:text-base mt-1">Oil on Canvas, 2024</p>
+      </div>
+      <div>
+        <h3 className="text-[10px] lg:text-xs uppercase tracking-widest text-white/50">Description</h3>
+        <p className="text-xs lg:text-sm text-white/70 leading-relaxed mt-2">
+          This is a placeholder description for the painting. You can add unique descriptions by updating your Cloudinary metadata or adding a local JSON file with data mapped to the Image ID.
+        </p>
+      </div>
+    </div>
+  </div>
 
-          {/* Action Buttons (moved to bottom of panel) */}
-          <div className="mt-8 flex items-center gap-3">
-             <button
-              onClick={() => closeModal()}
-              className="flex-grow rounded-md bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/20 transition"
-            >
-              {navigation ? "Close" : "Go Back"}
-            </button>
-            <button
-              onClick={() => downloadPhoto(`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${currentImage.public_id}.${currentImage.format}`, `${index}.jpg`)}
-              className="rounded-md bg-white p-2 text-black hover:bg-white/90 transition"
-              title="Download"
-            >
-              <ArrowDownTrayIcon className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
+  {/* Action Buttons (moved to bottom of panel) */}
+  <div className="mt-6 lg:mt-8 flex items-center gap-3">
+     <button
+      onClick={() => closeModal()}
+      className="flex-grow rounded-md bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/20 transition"
+    >
+      {navigation ? "Close" : "Go Back"}
+    </button>
+    <button
+      onClick={() => downloadPhoto(`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${currentImage.public_id}.${currentImage.format}`, `${index}.jpg`)}
+      className="rounded-md bg-white p-2 text-black hover:bg-white/90 transition"
+      title="Download"
+    >
+      <ArrowDownTrayIcon className="h-5 w-5" />
+    </button>
+  </div>
+</div>
       </div>
     </MotionConfig>
   );
