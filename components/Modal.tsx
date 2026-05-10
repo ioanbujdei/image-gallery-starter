@@ -28,18 +28,19 @@ export default function Modal({
   }
 
   function changePhotoId(newVal: number) {
-    if (newVal > index) {
+    if (newVal > curIndex) {
       setDirection(1);
     } else {
       setDirection(-1);
     }
+    
     setCurIndex(newVal);
+
+    // FIX: Explicitly map the 'href' to the home page so the Modal stays open
     router.push(
-      {
-        query: { photoId: newVal },
-      },
-      `/p/${newVal}`,
-      { shallow: true },
+      `/?photoId=${newVal}`, // The actual page to stay on (Home)
+      `/p/${newVal}`,        // The URL to show in the address bar
+      { shallow: true }
     );
   }
 
