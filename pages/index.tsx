@@ -50,29 +50,28 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
           />
         )}
         <div className="columns-1 gap-4 sm:columns-2 xl:columns-3 2xl:columns-4">
-          <div className="after:content relative mb-5 flex h-[629px] flex-col items-center justify-end gap-4 overflow-hidden rounded-lg bg-white/10 px-6 pb-16 pt-64 text-center text-white shadow-highlight after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight lg:pt-0">
-                <Image
-            src="/alpha-logo.png" 
-            alt="Alpha Logo"
-            width={320}
-            height={200}
-            className="z-10"
-            priority
-          />
-            <h1 className="mt-8 mb-4 text-base font-bold uppercase tracking-widest">
-              Alpha01 Exhibition
-            </h1>
-            <p className="max-w-[40ch] text-white/75 sm:max-w-[32ch]">
-              placeholder
-            </p>
-            <a
-              className="pointer z-10 mt-6 rounded-lg border border-white bg-white px-3 py-2 text-sm font-semibold text-black transition hover:bg-white/10 hover:text-white md:mt-4"
-              href=""
-              target="_blank"
-              rel="noreferrer"
-            >
-              Placeholder
-            </a>
+{/* Updated Hero Box: Reduced height, removed placeholders/buttons, changed font */}
+<div className="after:content relative mb-5 flex h-[400px] flex-col items-center justify-center gap-2 overflow-hidden rounded-lg bg-white/10 px-6 text-center text-white shadow-highlight after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight">
+  
+  {/* Your PNG Logo from the previous step */}
+  <Image
+    src="/alpha-logo.png"
+    alt="Alpha Logo"
+    width={280}
+    height={160}
+    className="z-10"
+    priority
+  />
+
+  {/* Title with Times New Roman font */}
+  <h1 
+    className="mt-4 text-2xl font-medium uppercase tracking-[0.2em]"
+    style={{ fontFamily: 'Times New Roman, Times, serif' }}
+  >
+    Alpha01 Exhibition
+  </h1>
+
+</div>
           </div>
           {images.map(({ id, public_id, format, blurDataUrl }) => (
             <Link
