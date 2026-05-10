@@ -47,10 +47,10 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
           />
         )}
         
-{/* Main Grid Container */}
+{/* Main Gallery Container: Reverted to a standard grid for uniform squares */}
 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
   
-  {/* The Hero Box (Now strictly one square) */}
+  {/* Hero Box: Now a perfect square matching the gallery items */}
   <div className="relative flex aspect-square flex-col items-center justify-center gap-2 overflow-hidden rounded-lg bg-white/10 px-6 text-center text-white shadow-highlight">
     <Image
       src="/alpha-logo.png"
@@ -68,7 +68,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
     </h1>
   </div>
 
-  {/* Image Square Grid */}
+  {/* Painting Grid Items */}
   {images.map(({ id, public_id, format, blurDataUrl }) => (
     <Link
       key={id}
@@ -76,14 +76,16 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
       as={`/p/${id}`}
       ref={id === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
       shallow
-      className="group relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-lg after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight"
+      /* The square 'frame' for the painting */
+      className="group relative aspect-square flex items-center justify-center overflow-hidden rounded-lg bg-white/5 after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight"
     >
       <Image
         alt="Painting"
-        className="h-full w-full object-cover transition duration-300 group-hover:scale-110 group-hover:brightness-110"
+        /* object-contain ensures the image fits inside the square without cropping */
+        className="max-h-full max-w-full object-contain transition duration-300 group-hover:scale-105 group-hover:brightness-110"
         placeholder="blur"
         blurDataURL={blurDataUrl}
-        src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_fill,ar_1:1,g_auto,w_720/${public_id}.${format}`}
+        src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_limit,w_720,h_720/${public_id}.${format}`}
         fill
         sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, (max-width: 1536px) 33vw, 25vw"
       />
