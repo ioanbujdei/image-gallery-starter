@@ -71,7 +71,6 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
     Alpha01 Exhibition
   </h1>
 
-</div>
           </div>
           {images.map(({ id, public_id, format, blurDataUrl }) => (
             <Link
