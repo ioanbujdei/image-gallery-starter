@@ -1,3 +1,15 @@
+import {
+  ArrowDownTrayIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
+import Image from "next/image";
+import { useState } from "react";
+import { useSwipeable } from "react-swipeable";
+import { variants } from "../utils/animationVariants";
+import downloadPhoto from "../utils/downloadPhoto";
+import type { ImageProps, SharedModalProps } from '../utils/types'; // Add this line
+
 export default function SharedModal({
   index,
   images,
@@ -7,6 +19,7 @@ export default function SharedModal({
   currentPhoto,
   direction,
 }: SharedModalProps) {
+  // ... rest of your code
   const [loaded, setLoaded] = useState(false);
   let currentImage = images ? images[index] : currentPhoto;
 
