@@ -6,6 +6,10 @@ export interface ImageProps {
   public_id: string;
   format: string;
   blurDataUrl?: string;
+  // Add these new fields
+  artist?: string;      
+  year?: string;        
+  description?: string; 
 }
 
 export interface SharedModalProps {
