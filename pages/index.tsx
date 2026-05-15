@@ -35,17 +35,35 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
       <main className="mx-auto max-w-[1960px] p-4">
         {photoId && (
           <Modal
-            images={images} // Pass the FULL list so the modal can see detail shots
+            images={images} // Pass ALL images to the modal so it can find the details
             onClose={() => {
               setLastViewedPhoto(photoId);
             }}
           />
         )}
         
+        {/* Main Grid Container */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {/* ... Hero Box code ... */}
+          
+          {/* THE RESTORED HERO BOX */}
+          <div className="relative flex aspect-square flex-col items-center justify-center gap-2 overflow-hidden rounded-lg bg-white/10 px-6 text-center text-white shadow-highlight">
+            <Image
+              src="/alpha-logo.png"
+              alt="Alpha Logo"
+              width={240}
+              height={140}
+              className="z-10"
+              priority
+            />
+            <h1 
+              className="mt-4 text-xl font-medium uppercase tracking-[0.2em]"
+              style={{ fontFamily: 'Times New Roman, Times, serif' }}
+            >
+              Alpha.1 Exhibition
+            </h1>
+          </div>
 
-          {/* Render ONLY the main paintings in the grid */}
+          {/* Painting Grid Items (Using mainImages only) */}
           {mainImages.map(({ id, public_id, format, blurDataUrl }) => (
             <Link
               key={id}
@@ -68,10 +86,14 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
           ))}
         </div>
       </main>
-      {/* ... Footer ... */}
+      
+      <footer className="p-6 text-center text-white/80 sm:p-12">
+        A project of the Paul-talk Discord server.
+      </footer>
     </>
   );
 };
+
 export default Home;
 
 export async function getStaticProps() {
@@ -79,6 +101,7 @@ export async function getStaticProps() {
     .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
     .sort_by("public_id", "desc")
     .max_results(400)
+    .with_field('context')
     .execute();
     
   let reducedResults: ImageProps[] = [];
@@ -91,6 +114,9 @@ export async function getStaticProps() {
       width: result.width,
       public_id: result.public_id,
       format: result.format,
+      artist: result.context?.artist || "",
+      year: result.context?.year || "",
+      description: result.context?.description || "",
     });
     i++;
   }
