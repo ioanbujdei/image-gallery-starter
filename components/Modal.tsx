@@ -44,17 +44,6 @@ export default function Modal({
     );
   }
 
-  useKeypress("ArrowRight", () => {
-    if (index + 1 < images.length) {
-      changePhotoId(index + 1);
-    }
-  });
-
-  useKeypress("ArrowLeft", () => {
-    if (index > 0) {
-      changePhotoId(index - 1);
-    }
-  });
 
   return (
     <Dialog
