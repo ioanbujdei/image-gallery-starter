@@ -1,9 +1,5 @@
 import {
   ArrowDownTrayIcon,
-  ArrowTopRightOnSquareIcon,
-  ArrowUturnLeftIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
@@ -12,9 +8,7 @@ import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { variants } from "../utils/animationVariants";
 import downloadPhoto from "../utils/downloadPhoto";
-import { range } from "../utils/range";
 import type { ImageProps, SharedModalProps } from "../utils/types";
-import Twitter from "./Icons/Twitter";
 
 export default function SharedModal({
   index,
@@ -27,9 +21,8 @@ export default function SharedModal({
 }: SharedModalProps) {
   const [loaded, setLoaded] = useState(false);
 
-  let filteredImages = images?.filter((img: ImageProps) =>
-    range(index - 15, index + 15).includes(img.id),
-  );
+  // Filter for 'Related' images (e.g., the next 6 images in the gallery)
+  const relatedImages = images?.filter((img) => img.id !== index).slice(0, 6);
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
@@ -54,12 +47,11 @@ export default function SharedModal({
         opacity: { duration: 0.2 },
       }}
     >
-      {/* Main Container: Uses 'wide' to switch to side-by-side in landscape */}
       <div
         className="relative z-50 flex h-full w-full max-w-7xl flex-col wide:flex-row items-center justify-center overflow-hidden"
         {...handlers}
       >
-        {/* Left Side: The Image Area */}
+        {/* Left Side: The Image Area (Arrows Removed) */}
         <div className="relative flex-grow h-1/2 wide:h-full w-full wide:w-3/4 overflow-hidden flex items-center justify-center p-4">
           <div className="relative h-full w-full">
             <AnimatePresence initial={false} custom={direction}>
@@ -87,54 +79,42 @@ export default function SharedModal({
               </motion.div>
             </AnimatePresence>
           </div>
-          
-          {/* Navigation Buttons */}
-          {navigation && (
-            <>
-              {index > 0 && (
-                <button
-                  className="absolute left-4 top-1/2 z-[100] -translate-y-1/2 rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    changePhotoId(index - 1);
-                  }}
-                >
-                  <ChevronLeftIcon className="h-5 w-5" />
-                </button>
-              )}
-              {index + 1 < (images?.length ?? 0) && (
-                <button
-                  className="absolute right-4 top-1/2 z-[100] -translate-y-1/2 rounded-full bg-black/50 p-2 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    changePhotoId(index + 1);
-                  }}
-                >
-                  <ChevronRightIcon className="h-5 w-5" />
-                </button>
-              )}
-            </>
-          )}
         </div>
 
-        {/* Right Side: The Details Panel */}
+        {/* Right Side: The Details Panel with Related Thumbnails */}
         <div className="h-1/2 wide:h-full w-full wide:w-1/4 bg-black/40 backdrop-blur-xl p-6 flex flex-col text-white border-t wide:border-t-0 wide:border-l border-white/10 overflow-y-auto">
           <div className="flex-grow">
             <h2 className="text-xl font-bold tracking-tight">Painting Details</h2>
+            
             <div className="mt-4 space-y-4">
               <div>
                 <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
-                <p className="text-base font-medium mt-0.5">Placeholder Artist Name</p>
+                <p className="text-base font-medium mt-0.5">{currentImage.artist || "Placeholder Artist"}</p>
               </div>
               <div>
                 <h3 className="text-[10px] uppercase tracking-widest text-white/50">Medium & Year</h3>
-                <p className="text-sm mt-0.5">Oil on Canvas, 2024</p>
+                <p className="text-sm mt-0.5">{currentImage.year || "Oil on Canvas, 2024"}</p>
               </div>
-              <div>
-                <h3 className="text-[10px] uppercase tracking-widest text-white/50">Description</h3>
-                <p className="text-xs text-white/70 leading-relaxed mt-1">
-                  This is a placeholder description. In landscape mode, this panel is now scrollable to ensure the painting stays visible.
-                </p>
+              
+              {/* Related Paintings Section */}
+              <div className="pt-4 border-t border-white/10">
+                <h3 className="text-[10px] uppercase tracking-widest text-white/50 mb-3">Related Paintings</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {relatedImages?.map((img) => (
+                    <button
+                      key={img.id}
+                      onClick={() => changePhotoId(img.id)}
+                      className="relative aspect-square overflow-hidden rounded-md border border-white/10 transition hover:border-white/50"
+                    >
+                      <Image
+                        src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_thumb,w_200,h_200,g_auto/${img.public_id}.${img.format}`}
+                        alt="Related painting"
+                        fill
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -145,7 +125,7 @@ export default function SharedModal({
               onClick={() => closeModal()}
               className="flex-grow rounded-md bg-white/10 px-4 py-2 text-xs font-medium hover:bg-white/20 transition"
             >
-              {navigation ? "Close" : "Go Back"}
+              Close
             </button>
             <button
               onClick={() => downloadPhoto(`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${currentImage.public_id}.${currentImage.format}`, `${index}.jpg`)}
