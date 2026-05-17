@@ -139,7 +139,7 @@ export default function SharedModal({
                         onClick={() => setRevealContact(true)}
                         className="inline-block text-xs font-medium mt-1 bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded border border-white/10 text-white/80 hover:text-white transition cursor-pointer"
                       >
-                        Click to reveal contact
+                        Reveal
                       </button>
                     )
                   ) : (
@@ -168,7 +168,7 @@ export default function SharedModal({
                 </div>
               </div>
 
-              {/* Optional Description (Remains optional if you choose to write one) */}
+              {/* Optional Description */}
               {mainImage.context?.description && (
                 <div className="pt-4 border-t border-white/10">
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50">Description</h3>
