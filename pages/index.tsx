@@ -22,7 +22,10 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
 
   useEffect(() => {
     if (lastViewedPhoto && !photoId) {
-      lastViewedPhotoRef.current.scrollIntoView({ block: "center" });
+      // FIX: Added safety check to prevent client-side exception when closing detail shots
+      if (lastViewedPhotoRef.current) {
+        lastViewedPhotoRef.current.scrollIntoView({ block: "center" });
+      }
       setLastViewedPhoto(null);
     }
   }, [photoId, lastViewedPhoto, setLastViewedPhoto]);
