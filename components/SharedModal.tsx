@@ -21,10 +21,12 @@ export default function SharedModal({
   // 1. Get the base ID (e.g., 'painting-1' from 'painting-1-detail-01')
   const baseId = currentImage.public_id.split("-detail")[0];
   
-  // 2. Find all images that share that base ID (including the parent image itself)
-  const detailShots = images?.filter((img) => 
-    img.public_id === baseId || img.public_id.startsWith(baseId + "-detail")
-  );
+  // 2. Find all images that share that base ID and explicitly sort them ascending by public_id
+  const detailShots = images
+    ?.filter((img) => 
+      img.public_id === baseId || img.public_id.startsWith(baseId + "-detail")
+    )
+    .sort((a, b) => a.public_id.localeCompare(b.public_id));
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
