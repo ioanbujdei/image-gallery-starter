@@ -17,12 +17,11 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
 
   const lastViewedPhotoRef = useRef<HTMLAnchorElement>(null);
 
-  // Filter out images that contain "-detail" in their ID for the main grid
+  // Filter out images containing "-detail" so sub-images don't clutter the main page grid
   const mainImages = images.filter(img => !img.public_id.includes("-detail"));
 
   useEffect(() => {
     if (lastViewedPhoto && !photoId) {
-      // FIX: Added safety check to prevent client-side exception when closing detail shots
       if (lastViewedPhotoRef.current) {
         lastViewedPhotoRef.current.scrollIntoView({ block: "center" });
       }
@@ -34,21 +33,29 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
     <>
       <Head>
         <title>Alpha01 Exhibition</title>
+        <meta
+          property="og:image"
+          content="https://nextjsconf-pics.vercel.app/og-image.png"
+        />
+        <meta
+          name="twitter:image"
+          content="https://nextjsconf-pics.vercel.app/og-image.png"
+        />
       </Head>
       <main className="mx-auto max-w-[1960px] p-4">
         {photoId && (
           <Modal
-            images={images} // Pass ALL images to the modal so it can find the details
+            images={images} // Pass ALL images so the modal panel can see your details
             onClose={() => {
               setLastViewedPhoto(photoId);
             }}
           />
         )}
         
-        {/* Main Grid Container */}
+        {/* Main Gallery Grid Container */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           
-          {/* THE RESTORED HERO BOX */}
+          {/* Hero Box Branding */}
           <div className="relative flex aspect-square flex-col items-center justify-center gap-2 overflow-hidden rounded-lg bg-white/10 px-6 text-center text-white shadow-highlight">
             <Image
               src="/alpha-logo.png"
@@ -62,11 +69,11 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
               className="mt-4 text-xl font-medium uppercase tracking-[0.2em]"
               style={{ fontFamily: 'Times New Roman, Times, serif' }}
             >
-              Alpha.1 Exhibition
+              Alpha01 Exhibition
             </h1>
           </div>
 
-          {/* Painting Grid Items (Using mainImages only) */}
+          {/* Painting Grid Items */}
           {mainImages.map(({ id, public_id, format, blurDataUrl }) => (
             <Link
               key={id}
@@ -104,7 +111,7 @@ export async function getStaticProps() {
     .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
     .sort_by("public_id", "desc")
     .max_results(400)
-    .with_field('context')
+    .with_field('context') // Requests context metadata fields from Cloudinary
     .execute();
     
   let reducedResults: ImageProps[] = [];
@@ -117,9 +124,7 @@ export async function getStaticProps() {
       width: result.width,
       public_id: result.public_id,
       format: result.format,
-      artist: result.context?.artist || "",
-      year: result.context?.year || "",
-      description: result.context?.description || "",
+      context: result.context || {}, // Maps metadata safely into page props
     });
     i++;
   }
