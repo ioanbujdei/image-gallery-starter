@@ -88,9 +88,9 @@ export default function SharedModal({
         {/* Right Side: Details Panel */}
         <div className="h-1/2 wide:h-full w-full wide:w-1/4 bg-black/40 backdrop-blur-xl p-6 flex flex-col text-white border-t wide:border-t-0 wide:border-l border-white/10 overflow-y-auto">
           <div className="flex-grow">
-            <h2 className="text-xl font-bold tracking-tight">Painting Details</h2>
             
-            <div className="mt-4 space-y-4">
+            {/* Painting Details header removed here */}
+            <div className="space-y-4">
               <div>
                 <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
                 <p className="text-base font-medium mt-0.5">{currentImage.artist || "Unknown Artist"}</p>
