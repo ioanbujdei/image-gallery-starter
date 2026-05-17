@@ -17,13 +17,13 @@ export default function SharedModal({
   const [loaded, setLoaded] = useState(false);
   let currentImage = images ? images[index] : currentPhoto;
 
-  // Logic to find "Detail" shots:
+  // Logic to find "Detail" shots and the Main Image:
   // 1. Get the base ID (e.g., 'painting-1' from 'painting-1-detail-01')
   const baseId = currentImage.public_id.split("-detail")[0];
   
-  // 2. Find all images that share that base ID but aren't the one we're currently viewing
+  // 2. Find all images that share that base ID (including the parent image itself)
   const detailShots = images?.filter((img) => 
-    img.public_id.startsWith(baseId) && img.id !== index
+    img.public_id === baseId || img.public_id.startsWith(baseId + "-detail")
   );
 
   const handlers = useSwipeable({
@@ -66,7 +66,7 @@ export default function SharedModal({
               >
                 <Image
                   src={`https://res.cloudinary.com/${
-                    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+                    process.env.NEXT_PUBLIC_CLOC_NAME ?? process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
                   }/image/upload/c_scale,${navigation ? "w_1280" : "w_1920"}/${
                     currentImage.public_id
                   }.${currentImage.format}`}
@@ -110,7 +110,11 @@ export default function SharedModal({
                       <button
                         key={img.id}
                         onClick={() => changePhotoId(img.id)}
-                        className="relative aspect-square overflow-hidden rounded-md border border-white/10 transition hover:border-white/50"
+                        className={`relative aspect-square overflow-hidden rounded-md border transition ${
+                          img.id === index
+                            ? "border-white ring-2 ring-white/40 bg-white/10 scale-95"
+                            : "border-white/10 hover:border-white/40"
+                        }`}
                       >
                         <Image
                           src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_thumb,w_200,h_200,g_auto/${img.public_id}.${img.format}`}
