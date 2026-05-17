@@ -2,8 +2,32 @@ import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
-import { variants } from "../utils/animationVariants";
 import type { ImageProps, SharedModalProps } from "../utils/types";
+
+// Premium gallery fade animation variants
+const fadeVariants = {
+  enter: {
+    opacity: 0,
+    scale: 0.98,
+  },
+  center: {
+    zIndex: 1,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      opacity: { duration: 0.25, ease: "easeOut" },
+      scale: { duration: 0.3, ease: "easeOut" },
+    },
+  },
+  exit: {
+    zIndex: 0,
+    opacity: 0,
+    scale: 1.02,
+    transition: {
+      opacity: { duration: 0.2, ease: "easeIn" },
+    },
+  },
+};
 
 export default function SharedModal({
   index,
@@ -12,16 +36,13 @@ export default function SharedModal({
   closeModal,
   navigation,
   currentPhoto,
-  direction,
 }: SharedModalProps) {
   const [loaded, setLoaded] = useState(false);
   let currentImage = images ? images[index] : currentPhoto;
 
   // Logic to find "Detail" shots and the Main Image:
-  // 1. Get the base ID (e.g., 'painting-1' from 'painting-1-detail-01')
   const baseId = currentImage.public_id.split("-detail")[0];
   
-  // 2. Find all images that share that base ID and explicitly sort them ascending by public_id
   const detailShots = images
     ?.filter((img) => 
       img.public_id === baseId || img.public_id.startsWith(baseId + "-detail")
@@ -43,28 +64,23 @@ export default function SharedModal({
   });
 
   return (
-    <MotionConfig
-      transition={{
-        x: { type: "spring", stiffness: 300, damping: 30 },
-        opacity: { duration: 0.2 },
-      }}
-    >
+    <MotionConfig>
       <div
         className="relative z-50 flex h-full w-full max-w-7xl flex-col wide:flex-row items-center justify-center overflow-hidden"
         {...handlers}
       >
         {/* Left Side: Large Image Area */}
         <div className="relative flex-grow h-1/2 wide:h-full w-full wide:w-3/4 overflow-hidden flex items-center justify-center p-4">
-          <div className="relative h-full w-full">
-            <AnimatePresence initial={false} custom={direction}>
+          <div className="relative h-full w-full flex items-center justify-center">
+            {/* mode="popLayout" prevents layout shifts during cross-fade */}
+            <AnimatePresence initial={false} mode="popLayout">
               <motion.div
                 key={index}
-                custom={direction}
-                variants={variants}
+                variants={fadeVariants}
                 initial="enter"
                 animate="center"
                 exit="exit"
-                className="absolute inset-0"
+                className="absolute w-full h-full flex items-center justify-center"
               >
                 <Image
                   src={`https://res.cloudinary.com/${
@@ -75,7 +91,7 @@ export default function SharedModal({
                   fill
                   priority
                   alt="Gallery image"
-                  className="object-contain"
+                  className="object-contain select-none pointer-events-none"
                   onLoad={() => setLoaded(true)}
                 />
               </motion.div>
@@ -86,7 +102,6 @@ export default function SharedModal({
         {/* Right Side: Details Panel */}
         <div className="h-1/2 wide:h-full w-full wide:w-1/4 bg-black/40 backdrop-blur-xl p-6 flex flex-col text-white border-t wide:border-t-0 wide:border-l border-white/10 overflow-y-auto">
           <div className="flex-grow">
-            
             <div className="space-y-4">
               <div>
                 <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
