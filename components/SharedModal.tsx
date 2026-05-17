@@ -42,10 +42,9 @@ export default function SharedModal({
   const [loaded, setLoaded] = useState(false);
   let currentImage = images ? images[index] : currentPhoto;
 
-  // Logic to find "Detail" shots and the Main Image:
   const baseId = currentImage.public_id.split("-detail")[0];
   
-  // Find the parent/main image object to lock metadata display text
+  // Look up the parent/main image object to ensure metadata stays locked
   const mainImage = images?.find((img) => img.public_id === baseId) || currentImage;
 
   const detailShots = images
@@ -109,24 +108,74 @@ export default function SharedModal({
         {/* Right Side: Details Panel */}
         <div className="h-1/2 wide:h-full w-full wide:w-1/4 bg-black/40 backdrop-blur-xl p-6 flex flex-col text-white border-t wide:border-t-0 wide:border-l border-white/10 overflow-y-auto">
           <div className="flex-grow">
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
-                <p className="text-base font-medium mt-0.5">{mainImage.artist || "Unknown Artist"}</p>
-              </div>
-              <div>
-                <h3 className="text-[10px] uppercase tracking-widest text-white/50">Medium & Year</h3>
-                <p className="text-sm mt-0.5">{mainImage.year || "N/A"}</p>
-              </div>
-              <div>
-                <h3 className="text-[10px] uppercase tracking-widest text-white/50">Description</h3>
-                <p className="text-xs text-white/70 leading-relaxed mt-1">
-                  {mainImage.description || "No description available."}
-                </p>
-              </div>
+            <div className="space-y-6">
+              
+              {/* Group 1: Artist, Location, Contact */}
+              {(mainImage.context?.artist || mainImage.context?.location || mainImage.context?.contact) && (
+                <div className="space-y-4">
+                  {mainImage.context?.artist && (
+                    <div>
+                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
+                      <p className="text-sm font-medium mt-0.5">{mainImage.context.artist}</p>
+                    </div>
+                  )}
+                  {mainImage.context?.location && (
+                    <div>
+                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Location</h3>
+                      <p className="text-sm font-medium mt-0.5">{mainImage.context.location}</p>
+                    </div>
+                  )}
+                  {mainImage.context?.contact && (
+                    <div>
+                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Contact</h3>
+                      <p className="text-sm font-medium mt-0.5">{mainImage.context.contact}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Group 2: Title, Medium, Size, Status */}
+              {(mainImage.context?.title || mainImage.context?.medium || mainImage.context?.size || mainImage.context?.status) && (
+                <div className="space-y-4 pt-4 border-t border-white/10">
+                  {mainImage.context?.title && (
+                    <div>
+                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Title</h3>
+                      <p className="text-sm font-medium mt-0.5">{mainImage.context.title}</p>
+                    </div>
+                  )}
+                  {mainImage.context?.medium && (
+                    <div>
+                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Medium</h3>
+                      <p className="text-sm font-medium mt-0.5">{mainImage.context.medium}</p>
+                    </div>
+                  )}
+                  {mainImage.context?.size && (
+                    <div>
+                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Size</h3>
+                      <p className="text-sm font-medium mt-0.5">{mainImage.context.size}</p>
+                    </div>
+                  )}
+                  {mainImage.context?.status && (
+                    <div>
+                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Status</h3>
+                      <p className="text-sm font-medium mt-0.5">{mainImage.context.status}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Optional Description (if added to Cloudinary contextual keys) */}
+              {mainImage.context?.description && (
+                <div className="pt-4 border-t border-white/10">
+                  <h3 className="text-[10px] uppercase tracking-widest text-white/50">Description</h3>
+                  <p className="text-xs text-white/70 leading-relaxed mt-1">
+                    {mainImage.context.description}
+                  </p>
+                </div>
+              )}
 
               {/* Detail Shots Section */}
-              {detailShots && detailShots.length > 0 && (
+              {detailShots && detailShots.length > 1 && (
                 <div className="pt-4 border-t border-white/10">
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50 mb-3">Detail Views</h3>
                   <div className="grid grid-cols-3 gap-2">
