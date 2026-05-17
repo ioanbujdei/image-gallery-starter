@@ -2,7 +2,6 @@ import { Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
-import useKeypress from "react-use-keypress";
 import type { ImageProps } from "../utils/types";
 import SharedModal from "./SharedModal";
 
@@ -28,22 +27,32 @@ export default function Modal({
   }
 
   function changePhotoId(newVal: number) {
-    if (newVal > curIndex) {
-      setDirection(1);
+    const currentImg = images.find(img => img.id === curIndex);
+    const nextImg = images.find(img => img.id === newVal);
+    
+    if (currentImg && nextImg) {
+      // Check alphabetical sequence order to match the thumbnail layout line exactly
+      if (nextImg.public_id.localeCompare(currentImg.public_id) > 0) {
+        setDirection(1);
+      } else {
+        setDirection(-1);
+      }
     } else {
-      setDirection(-1);
+      if (newVal > curIndex) {
+        setDirection(1);
+      } else {
+        setDirection(-1);
+      }
     }
     
     setCurIndex(newVal);
 
-    // FIX: Explicitly map the 'href' to the home page so the Modal stays open
     router.push(
-      `/?photoId=${newVal}`, // The actual page to stay on (Home)
-      `/p/${newVal}`,        // The URL to show in the address bar
+      `/?photoId=${newVal}`,
+      `/p/${newVal}`,
       { shallow: true }
     );
   }
-
 
   return (
     <Dialog
