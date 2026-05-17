@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSwipeable } from "react-swipeable";
 import type { ImageProps, SharedModalProps } from "../utils/types";
 
@@ -40,6 +40,8 @@ export default function SharedModal({
   direction,
 }: SharedModalProps) {
   const [loaded, setLoaded] = useState(false);
+  const [revealContact, setRevealContact] = useState(false); // Bot protection state toggle
+  
   let currentImage = images ? images[index] : currentPhoto;
 
   const baseId = currentImage.public_id.split("-detail")[0];
@@ -52,6 +54,11 @@ export default function SharedModal({
       img.public_id === baseId || img.public_id.startsWith(baseId + "-detail")
     )
     .sort((a, b) => a.public_id.localeCompare(b.public_id));
+
+  // Automatically conceal contact information whenever switching paintings
+  useEffect(() => {
+    setRevealContact(false);
+  }, [index]);
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
@@ -111,60 +118,57 @@ export default function SharedModal({
             <div className="space-y-6">
               
               {/* Group 1: Artist, Location, Contact */}
-              {(mainImage.context?.artist || mainImage.context?.location || mainImage.context?.contact) && (
-                <div className="space-y-4">
-                  {mainImage.context?.artist && (
-                    <div>
-                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
-                      <p className="text-sm font-medium mt-0.5">{mainImage.context.artist}</p>
-                    </div>
-                  )}
-                  {mainImage.context?.location && (
-                    <div>
-                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Location</h3>
-                      <p className="text-sm font-medium mt-0.5">{mainImage.context.location}</p>
-                    </div>
-                  )}
-                  {mainImage.context?.contact && (
-                    <div>
-                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Contact</h3>
-                      <p className="text-sm font-medium mt-0.5">{mainImage.context.contact}</p>
-                    </div>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
+                  <p className="text-sm font-medium mt-0.5">{mainImage.context?.artist || "-"}</p>
+                </div>
+                <div>
+                  <h3 className="text-[10px] uppercase tracking-widest text-white/50">Location</h3>
+                  <p className="text-sm font-medium mt-0.5">{mainImage.context?.location || "-"}</p>
+                </div>
+                <div>
+                  <h3 className="text-[10px] uppercase tracking-widest text-white/50">Contact</h3>
+                  {mainImage.context?.contact ? (
+                    revealContact ? (
+                      <p className="text-sm font-medium mt-0.5 break-all select-all selection:bg-white/20">
+                        {mainImage.context.contact}
+                      </p>
+                    ) : (
+                      <button
+                        onClick={() => setRevealContact(true)}
+                        className="inline-block text-xs font-medium mt-1 bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded border border-white/10 text-white/80 hover:text-white transition cursor-pointer"
+                      >
+                        Click to reveal contact
+                      </button>
+                    )
+                  ) : (
+                    <p className="text-sm font-medium mt-0.5">-</p>
                   )}
                 </div>
-              )}
+              </div>
 
               {/* Group 2: Title, Medium, Size, Status */}
-              {(mainImage.context?.title || mainImage.context?.medium || mainImage.context?.size || mainImage.context?.status) && (
-                <div className="space-y-4 pt-4 border-t border-white/10">
-                  {mainImage.context?.title && (
-                    <div>
-                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Title</h3>
-                      <p className="text-sm font-medium mt-0.5">{mainImage.context.title}</p>
-                    </div>
-                  )}
-                  {mainImage.context?.medium && (
-                    <div>
-                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Medium</h3>
-                      <p className="text-sm font-medium mt-0.5">{mainImage.context.medium}</p>
-                    </div>
-                  )}
-                  {mainImage.context?.size && (
-                    <div>
-                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Size</h3>
-                      <p className="text-sm font-medium mt-0.5">{mainImage.context.size}</p>
-                    </div>
-                  )}
-                  {mainImage.context?.status && (
-                    <div>
-                      <h3 className="text-[10px] uppercase tracking-widest text-white/50">Status</h3>
-                      <p className="text-sm font-medium mt-0.5">{mainImage.context.status}</p>
-                    </div>
-                  )}
+              <div className="space-y-4 pt-4 border-t border-white/10">
+                <div>
+                  <h3 className="text-[10px] uppercase tracking-widest text-white/50">Title</h3>
+                  <p className="text-sm font-medium mt-0.5">{mainImage.context?.title || "-"}</p>
                 </div>
-              )}
+                <div>
+                  <h3 className="text-[10px] uppercase tracking-widest text-white/50">Medium</h3>
+                  <p className="text-sm font-medium mt-0.5">{mainImage.context?.medium || "-"}</p>
+                </div>
+                <div>
+                  <h3 className="text-[10px] uppercase tracking-widest text-white/50">Size</h3>
+                  <p className="text-sm font-medium mt-0.5">{mainImage.context?.size || "-"}</p>
+                </div>
+                <div>
+                  <h3 className="text-[10px] uppercase tracking-widest text-white/50">Status</h3>
+                  <p className="text-sm font-medium mt-0.5">{mainImage.context?.status || "-"}</p>
+                </div>
+              </div>
 
-              {/* Optional Description (if added to Cloudinary contextual keys) */}
+              {/* Optional Description (Remains optional if you choose to write one) */}
               {mainImage.context?.description && (
                 <div className="pt-4 border-t border-white/10">
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50">Description</h3>
