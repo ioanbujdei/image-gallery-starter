@@ -1,12 +1,8 @@
-import {
-  ArrowDownTrayIcon,
-} from "@heroicons/react/24/outline";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { variants } from "../utils/animationVariants";
-import downloadPhoto from "../utils/downloadPhoto";
 import type { ImageProps, SharedModalProps } from "../utils/types";
 
 export default function SharedModal({
@@ -89,7 +85,6 @@ export default function SharedModal({
         <div className="h-1/2 wide:h-full w-full wide:w-1/4 bg-black/40 backdrop-blur-xl p-6 flex flex-col text-white border-t wide:border-t-0 wide:border-l border-white/10 overflow-y-auto">
           <div className="flex-grow">
             
-            {/* Painting Details header removed here */}
             <div className="space-y-4">
               <div>
                 <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
@@ -138,12 +133,6 @@ export default function SharedModal({
               className="flex-grow rounded-md bg-white/10 px-4 py-2 text-xs font-medium hover:bg-white/20 transition"
             >
               Close
-            </button>
-            <button
-              onClick={() => downloadPhoto(`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${currentImage.public_id}.${currentImage.format}`, `${index}.jpg`)}
-              className="rounded-md bg-white p-2 text-black hover:bg-white/90 transition"
-            >
-              <ArrowDownTrayIcon className="h-4 w-4" />
             </button>
           </div>
         </div>
