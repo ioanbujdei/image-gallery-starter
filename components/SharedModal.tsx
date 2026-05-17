@@ -45,6 +45,9 @@ export default function SharedModal({
   // Logic to find "Detail" shots and the Main Image:
   const baseId = currentImage.public_id.split("-detail")[0];
   
+  // Find the parent/main image object to lock metadata display text
+  const mainImage = images?.find((img) => img.public_id === baseId) || currentImage;
+
   const detailShots = images
     ?.filter((img) => 
       img.public_id === baseId || img.public_id.startsWith(baseId + "-detail")
@@ -109,16 +112,16 @@ export default function SharedModal({
             <div className="space-y-4">
               <div>
                 <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
-                <p className="text-base font-medium mt-0.5">{currentImage.artist || "Unknown Artist"}</p>
+                <p className="text-base font-medium mt-0.5">{mainImage.artist || "Unknown Artist"}</p>
               </div>
               <div>
                 <h3 className="text-[10px] uppercase tracking-widest text-white/50">Medium & Year</h3>
-                <p className="text-sm mt-0.5">{currentImage.year || "N/A"}</p>
+                <p className="text-sm mt-0.5">{mainImage.year || "N/A"}</p>
               </div>
               <div>
                 <h3 className="text-[10px] uppercase tracking-widest text-white/50">Description</h3>
                 <p className="text-xs text-white/70 leading-relaxed mt-1">
-                  {currentImage.description || "No description available."}
+                  {mainImage.description || "No description available."}
                 </p>
               </div>
 
