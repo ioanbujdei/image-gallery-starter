@@ -4,29 +4,30 @@ import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import type { ImageProps, SharedModalProps } from "../utils/types";
 
-// Premium gallery fade animation variants
-const fadeVariants = {
-  enter: {
+// GPU accelerated slide animation variants
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? "100%" : "-100%",
     opacity: 0,
-    scale: 0.98,
-  },
+  }),
   center: {
     zIndex: 1,
+    x: 0,
     opacity: 1,
-    scale: 1,
     transition: {
-      opacity: { duration: 0.25, ease: "easeOut" },
-      scale: { duration: 0.3, ease: "easeOut" },
+      x: { type: "spring", stiffness: 300, damping: 32 },
+      opacity: { duration: 0.25 },
     },
   },
-  exit: {
+  exit: (direction: number) => ({
     zIndex: 0,
+    x: direction > 0 ? "-100%" : "100%",
     opacity: 0,
-    scale: 1.02,
     transition: {
-      opacity: { duration: 0.2, ease: "easeIn" },
+      x: { type: "spring", stiffness: 300, damping: 32 },
+      opacity: { duration: 0.25 },
     },
-  },
+  }),
 };
 
 export default function SharedModal({
@@ -36,6 +37,7 @@ export default function SharedModal({
   closeModal,
   navigation,
   currentPhoto,
+  direction,
 }: SharedModalProps) {
   const [loaded, setLoaded] = useState(false);
   let currentImage = images ? images[index] : currentPhoto;
@@ -51,13 +53,15 @@ export default function SharedModal({
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      if (index < images?.length - 1) {
-        changePhotoId(index + 1);
+      const currentIdxInDetails = detailShots?.findIndex(img => img.id === index);
+      if (currentIdxInDetails !== undefined && currentIdxInDetails !== -1 && currentIdxInDetails < detailShots.length - 1) {
+        changePhotoId(detailShots[currentIdxInDetails + 1].id);
       }
     },
     onSwipedRight: () => {
-      if (index > 0) {
-        changePhotoId(index - 1);
+      const currentIdxInDetails = detailShots?.findIndex(img => img.id === index);
+      if (currentIdxInDetails !== undefined && currentIdxInDetails > 0) {
+        changePhotoId(detailShots[currentIdxInDetails - 1].id);
       }
     },
     trackMouse: true,
@@ -72,11 +76,11 @@ export default function SharedModal({
         {/* Left Side: Large Image Area */}
         <div className="relative flex-grow h-1/2 wide:h-full w-full wide:w-3/4 overflow-hidden flex items-center justify-center p-4">
           <div className="relative h-full w-full flex items-center justify-center">
-            {/* mode="popLayout" prevents layout shifts during cross-fade */}
-            <AnimatePresence initial={false} mode="popLayout">
+            <AnimatePresence initial={false} custom={direction} mode="popLayout">
               <motion.div
                 key={index}
-                variants={fadeVariants}
+                custom={direction}
+                variants={slideVariants}
                 initial="enter"
                 animate="center"
                 exit="exit"
