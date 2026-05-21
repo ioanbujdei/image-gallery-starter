@@ -8,19 +8,19 @@ class MyDocument extends Document {
           <link rel="icon" href="/favicon.ico" />
           <meta
             name="description"
-            content="See pictures from Next.js Conf and the After Party."
+            content="Alpha.1 Fine Art Exhibition Gallery."
           />
-          <meta property="og:site_name" content="nextjsconf-pics.vercel.app" />
+          <meta property="og:site_name" content="Alpha.1 Exhibition" />
           <meta
             property="og:description"
-            content="See pictures from Next.js Conf and the After Party."
+            content="Explore the Alpha.1 Exhibition gallery."
           />
-          <meta property="og:title" content="Alpha01 Exhibition" />
+          <meta property="og:title" content="Alpha.1 Exhibition" />
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="" />
+          <meta name="twitter:title" content="Alpha.1 Exhibition" />
           <meta
             name="twitter:description"
-            content=""
+            content="Explore the Alpha.1 Exhibition gallery."
           />
         </Head>
         <body className="bg-black antialiased">
