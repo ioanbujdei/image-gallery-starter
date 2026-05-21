@@ -32,7 +32,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
   return (
     <>
       <Head>
-        <title>Alpha01 Exhibition</title>
+        <title>Alpha.1 Exhibition</title>
         <meta
           property="og:image"
           content="https://nextjsconf-pics.vercel.app/og-image.png"
@@ -69,12 +69,12 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
               className="mt-4 text-xl font-medium uppercase tracking-[0.2em]"
               style={{ fontFamily: 'Times New Roman, Times, serif' }}
             >
-              Alpha01 Exhibition
+              Alpha.1 Exhibition
             </h1>
           </div>
 
-         {/* Painting Grid Items */}
-          {mainImages.map(({ id, public_id, format }) => ( 
+          {/* Painting Grid Items */}
+          {mainImages.map(({ id, public_id, format }) => (
             <Link
               key={id}
               href={`/?photoId=${id}`}
@@ -86,7 +86,6 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
               <Image
                 alt="Painting"
                 className="max-h-full max-w-full object-contain transition duration-300 group-hover:scale-105 group-hover:brightness-110"
-
                 src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_limit,w_720,h_720/${public_id}.${format}`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, (max-width: 1536px) 33vw, 25vw"
@@ -128,6 +127,7 @@ export async function getStaticProps() {
     i++;
   }
 
+  // We leave the blur placeholder mapping intact because the Modal detail view still relies on it!
   const blurImagePromises = results.resources.map((image: ImageProps) => {
     return getBase64ImageUrl(image);
   });
