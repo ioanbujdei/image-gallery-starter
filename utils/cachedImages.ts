@@ -1,6 +1,6 @@
 import cloudinary from "./cloudinary";
 
-let cachedResults;
+let cachedResults: any;
 
 export default async function getResults() {
   if (!cachedResults) {
@@ -8,6 +8,7 @@ export default async function getResults() {
       .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
       .sort_by("public_id", "desc")
       .max_results(400)
+      .with_field('context') // Ensures metadata is fetched on direct URL reloads
       .execute();
 
     cachedResults = fetchedResults;
