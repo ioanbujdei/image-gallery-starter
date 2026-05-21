@@ -8,9 +8,11 @@ import SharedModal from "./SharedModal";
 export default function Carousel({
   index,
   currentPhoto,
+  images, // Accept images here
 }: {
   index: number;
   currentPhoto: ImageProps;
+  images: ImageProps[]; // Define the type
 }) {
   const router = useRouter();
   const [, setLastViewedPhoto] = useLastViewedPhoto();
@@ -20,8 +22,9 @@ export default function Carousel({
     router.push("/", undefined, { shallow: true });
   }
 
+  // Fix navigation function so thumbnails can be clicked when reloading directly
   function changePhotoId(newVal: number) {
-    return newVal;
+    router.push(`/p/${newVal}`, undefined, { shallow: true });
   }
 
   useKeypress("Escape", () => {
@@ -31,12 +34,12 @@ export default function Carousel({
   return (
     <div className="fixed inset-0 flex items-center justify-center">
       <button
-        className="absolute inset-0 z-30 cursor-default bg-black backdrop-blur-2xl"
+        className="absolute inset-0 z-30 cursor-default bg-black/80 backdrop-blur-2xl"
         onClick={closeModal}
       >
         <Image
-          src={currentPhoto.blurDataUrl}
-          className="pointer-events-none h-full w-full"
+          src={currentPhoto.blurDataUrl || ""}
+          className="pointer-events-none h-full w-full object-cover opacity-50" // Fix stretched background layout
           alt="blurred background"
           fill
           priority={true}
@@ -44,6 +47,7 @@ export default function Carousel({
       </button>
       <SharedModal
         index={index}
+        images={images} // Pass the full array to your modal
         changePhotoId={changePhotoId}
         currentPhoto={currentPhoto}
         closeModal={closeModal}
