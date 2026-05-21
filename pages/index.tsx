@@ -73,8 +73,8 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
             </h1>
           </div>
 
-          {/* Painting Grid Items */}
-          {mainImages.map(({ id, public_id, format, blurDataUrl }) => (
+         {/* Painting Grid Items */}
+          {mainImages.map(({ id, public_id, format }) => ( 
             <Link
               key={id}
               href={`/?photoId=${id}`}
@@ -86,8 +86,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
               <Image
                 alt="Painting"
                 className="max-h-full max-w-full object-contain transition duration-300 group-hover:scale-105 group-hover:brightness-110"
-                placeholder="blur"
-                blurDataURL={blurDataUrl}
+
                 src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_limit,w_720,h_720/${public_id}.${format}`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, (max-width: 1536px) 33vw, 25vw"
