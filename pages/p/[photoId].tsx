@@ -7,7 +7,8 @@ import cloudinary from "../../utils/cloudinary";
 import getBase64ImageUrl from "../../utils/generateBlurPlaceholder";
 import type { ImageProps } from "../../utils/types";
 
-const Home: NextPage = ({ currentPhoto }: { currentPhoto: ImageProps }) => {
+// Pass the full images array into the Home page component
+const Home: NextPage = ({ currentPhoto, images }: { currentPhoto: ImageProps, images: ImageProps[] }) => {
   const router = useRouter();
   const { photoId } = router.query;
   let index = Number(photoId);
@@ -17,12 +18,13 @@ const Home: NextPage = ({ currentPhoto }: { currentPhoto: ImageProps }) => {
   return (
     <>
       <Head>
-        <title>Next.js Conf 2022 Photos</title>
+        <title>Alpha.1 Exhibition</title>
         <meta property="og:image" content={currentPhotoUrl} />
         <meta name="twitter:image" content={currentPhotoUrl} />
       </Head>
       <main className="mx-auto max-w-[1960px] p-4">
-        <Carousel currentPhoto={currentPhoto} index={index} />
+        {/* Pass the images array down to the Carousel */}
+        <Carousel currentPhoto={currentPhoto} index={index} images={images} />
       </main>
     </>
   );
@@ -42,18 +44,23 @@ export const getStaticProps: GetStaticProps = async (context) => {
       width: result.width,
       public_id: result.public_id,
       format: result.format,
+      context: result.context || {}, // Map the context data
     });
     i++;
   }
 
   const currentPhoto = reducedResults.find(
-    (img) => img.id === Number(context.params.photoId),
+    (img) => img.id === Number(context?.params?.photoId),
   );
-  currentPhoto.blurDataUrl = await getBase64ImageUrl(currentPhoto);
+  
+  if (currentPhoto) {
+    currentPhoto.blurDataUrl = await getBase64ImageUrl(currentPhoto);
+  }
 
   return {
     props: {
-      currentPhoto: currentPhoto,
+      currentPhoto: currentPhoto || null,
+      images: reducedResults, // Export the full list so thumbnails work
     },
   };
 };
