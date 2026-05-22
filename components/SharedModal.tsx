@@ -194,7 +194,7 @@ export default function SharedModal({
                         }`}
                       >
                         <Image
-                          src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_thumb,w_200,h_200,g_auto/${img.public_id}.${img.format}`}
+                          src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_fill,w_200,h_200/${img.public_id}.${img.format}`}
                           alt="Detail view"
                           fill
                           className="object-cover"
