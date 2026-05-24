@@ -7,13 +7,12 @@ import cloudinary from "../../utils/cloudinary";
 import getBase64ImageUrl from "../../utils/generateBlurPlaceholder";
 import type { ImageProps } from "../../utils/types";
 
-// Pass the full images array into the Home page component
 const Home: NextPage = ({ currentPhoto, images }: { currentPhoto: ImageProps, images: ImageProps[] }) => {
   const router = useRouter();
   const { photoId } = router.query;
   let index = Number(photoId);
 
-  const currentPhotoUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_scale,w_2560/${currentPhoto.public_id}.${currentPhoto.format}`;
+  const currentPhotoUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${currentPhoto.version ? `v${currentPhoto.version}/` : ''}c_scale,w_2560/${currentPhoto.public_id}.${currentPhoto.format}`;
 
   return (
     <>
@@ -23,7 +22,6 @@ const Home: NextPage = ({ currentPhoto, images }: { currentPhoto: ImageProps, im
         <meta name="twitter:image" content={currentPhotoUrl} />
       </Head>
       <main className="mx-auto max-w-[1960px] p-4">
-        {/* Pass the images array down to the Carousel */}
         <Carousel currentPhoto={currentPhoto} index={index} images={images} />
       </main>
     </>
@@ -44,7 +42,8 @@ export const getStaticProps: GetStaticProps = async (context) => {
       width: result.width,
       public_id: result.public_id,
       format: result.format,
-      context: result.context || {}, // Map the context data
+      version: result.version ? result.version.toString() : "",
+      context: result.context || {}, 
     });
     i++;
   }
@@ -60,8 +59,9 @@ export const getStaticProps: GetStaticProps = async (context) => {
   return {
     props: {
       currentPhoto: currentPhoto || null,
-      images: reducedResults, // Export the full list so thumbnails work
+      images: reducedResults, 
     },
+    revalidate: 60, // ISR: Tell Next.js to update the site in the background every 60s
   };
 };
 
