@@ -117,7 +117,7 @@ export default function SharedModal({
           <div className="flex-grow">
             <div className="space-y-6">
               
-              {/* Group 1: Artist, Location, Contact */}
+              {/* Group 1: Artist, Location, Contact, About */}
               <div className="space-y-4">
                 <div>
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
@@ -145,6 +145,10 @@ export default function SharedModal({
                   ) : (
                     <p className="text-sm font-medium mt-0.5">-</p>
                   )}
+                </div>
+                <div>
+                  <h3 className="text-[10px] uppercase tracking-widest text-white/50">About</h3>
+                  <p className="text-sm font-medium mt-0.5">{mainImage.context?.about || "-"}</p>
                 </div>
               </div>
 
