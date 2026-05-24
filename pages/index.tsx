@@ -86,7 +86,8 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
               <Image
                 alt="Painting"
                 className="max-h-full max-w-full object-contain transition duration-300 group-hover:scale-105 group-hover:brightness-110"
-                src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${version ? `v${version}/` : ''}c_limit,w_720,h_720/${public_id}.${format}`}
+                // FIX: v${version} moved AFTER c_limit
+                src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_limit,w_720,h_720/${version ? `v${version}/` : ''}${public_id}.${format}`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, (max-width: 1536px) 33vw, 25vw"
               />
@@ -122,7 +123,7 @@ export async function getStaticProps() {
       width: result.width,
       public_id: result.public_id,
       format: result.format,
-      version: result.version ? result.version.toString() : "", // Cache busting logic
+      version: result.version ? result.version.toString() : "", 
       context: result.context || {}, 
     });
     i++;
@@ -141,6 +142,6 @@ export async function getStaticProps() {
     props: {
       images: reducedResults,
     },
-    revalidate: 60, // ISR: Tell Next.js to update the site in the background every 60s
+    revalidate: 60, 
   };
 }
