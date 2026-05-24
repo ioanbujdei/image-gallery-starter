@@ -40,13 +40,12 @@ export default function SharedModal({
   direction,
 }: SharedModalProps) {
   const [loaded, setLoaded] = useState(false);
-  const [revealContact, setRevealContact] = useState(false); // Bot protection state toggle
+  const [revealContact, setRevealContact] = useState(false); 
   
   let currentImage = images ? images[index] : currentPhoto;
 
   const baseId = currentImage.public_id.split("-detail")[0];
   
-  // Look up the parent/main image object to ensure metadata stays locked
   const mainImage = images?.find((img) => img.public_id === baseId) || currentImage;
 
   const detailShots = images
@@ -55,7 +54,6 @@ export default function SharedModal({
     )
     .sort((a, b) => a.public_id.localeCompare(b.public_id));
 
-  // Automatically conceal contact information whenever switching paintings
   useEffect(() => {
     setRevealContact(false);
   }, [index]);
@@ -98,7 +96,7 @@ export default function SharedModal({
                 <Image
                   src={`https://res.cloudinary.com/${
                     process.env.NEXT_PUBLIC_CLOC_NAME ?? process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-                  }/image/upload/c_scale,${navigation ? "w_1280" : "w_1920"}/${
+                  }/image/upload/${currentImage.version ? `v${currentImage.version}/` : ''}c_scale,${navigation ? "w_1280" : "w_1920"}/${
                     currentImage.public_id
                   }.${currentImage.format}`}
                   fill
@@ -198,7 +196,7 @@ export default function SharedModal({
                         }`}
                       >
                         <Image
-                          src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_fill,w_200,h_200/${img.public_id}.${img.format}`}
+                          src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${img.version ? `v${img.version}/` : ''}c_fill,w_200,h_200/${img.public_id}.${img.format}`}
                           alt="Detail view"
                           fill
                           className="object-cover"
