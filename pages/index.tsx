@@ -45,7 +45,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
       <main className="mx-auto max-w-[1960px] p-4">
         {photoId && (
           <Modal
-            images={images} // Pass ALL images so the modal panel can see your details
+            images={images} 
             onClose={() => {
               setLastViewedPhoto(photoId);
             }}
@@ -74,7 +74,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
           </div>
 
           {/* Painting Grid Items */}
-          {mainImages.map(({ id, public_id, format }) => (
+          {mainImages.map(({ id, public_id, format, version }) => (
             <Link
               key={id}
               href={`/?photoId=${id}`}
@@ -86,7 +86,7 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
               <Image
                 alt="Painting"
                 className="max-h-full max-w-full object-contain transition duration-300 group-hover:scale-105 group-hover:brightness-110"
-                src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_limit,w_720,h_720/${public_id}.${format}`}
+                src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${version ? `v${version}/` : ''}c_limit,w_720,h_720/${public_id}.${format}`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, (max-width: 1536px) 33vw, 25vw"
               />
@@ -109,7 +109,7 @@ export async function getStaticProps() {
     .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
     .sort_by("public_id", "desc")
     .max_results(400)
-    .with_field('context') // Requests context metadata fields from Cloudinary
+    .with_field('context')
     .execute();
     
   let reducedResults: ImageProps[] = [];
@@ -122,12 +122,12 @@ export async function getStaticProps() {
       width: result.width,
       public_id: result.public_id,
       format: result.format,
-      context: result.context || {}, // Maps metadata safely into page props
+      version: result.version ? result.version.toString() : "", // Cache busting logic
+      context: result.context || {}, 
     });
     i++;
   }
 
-  // We leave the blur placeholder mapping intact because the Modal detail view still relies on it!
   const blurImagePromises = results.resources.map((image: ImageProps) => {
     return getBase64ImageUrl(image);
   });
@@ -141,5 +141,6 @@ export async function getStaticProps() {
     props: {
       images: reducedResults,
     },
+    revalidate: 60, // ISR: Tell Next.js to update the site in the background every 60s
   };
 }
