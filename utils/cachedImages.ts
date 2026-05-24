@@ -8,7 +8,7 @@ export default async function getResults() {
       .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
       .sort_by("public_id", "desc")
       .max_results(400)
-      .with_field('context') // Ensures metadata is fetched on direct URL reloads
+      .with_field('context')
       .execute();
 
     cachedResults = fetchedResults;
