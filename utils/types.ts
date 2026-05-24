@@ -6,11 +6,12 @@ export interface ImageProps {
   public_id: string;
   format: string;
   blurDataUrl?: string;
+  version?: string; // Tracks upload version for cache-busting
   context?: {
     artist?: string;
     location?: string;
     contact?: string;
-    about?: string; // New field added here
+    about?: string; // Added about tag
     title?: string;
     medium?: string;
     size?: string;
