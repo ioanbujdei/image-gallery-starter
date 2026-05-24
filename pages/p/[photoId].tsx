@@ -12,7 +12,8 @@ const Home: NextPage = ({ currentPhoto, images }: { currentPhoto: ImageProps, im
   const { photoId } = router.query;
   let index = Number(photoId);
 
-  const currentPhotoUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${currentPhoto.version ? `v${currentPhoto.version}/` : ''}c_scale,w_2560/${currentPhoto.public_id}.${currentPhoto.format}`;
+  // FIX: v${version} moved AFTER c_scale
+  const currentPhotoUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_scale,w_2560/${currentPhoto.version ? `v${currentPhoto.version}/` : ''}${currentPhoto.public_id}.${currentPhoto.format}`;
 
   return (
     <>
@@ -61,7 +62,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
       currentPhoto: currentPhoto || null,
       images: reducedResults, 
     },
-    revalidate: 60, // ISR: Tell Next.js to update the site in the background every 60s
+    revalidate: 60,
   };
 };
 
