@@ -6,11 +6,11 @@ export interface ImageProps {
   public_id: string;
   format: string;
   blurDataUrl?: string;
-  // Define the allowed metadata fields from Cloudinary context
   context?: {
     artist?: string;
     location?: string;
     contact?: string;
+    about?: string; // New field added here
     title?: string;
     medium?: string;
     size?: string;
