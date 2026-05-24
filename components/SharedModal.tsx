@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useSwipeable } from "react-swipeable";
 import type { ImageProps, SharedModalProps } from "../utils/types";
 
-// GPU accelerated slide animation variants
 const slideVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? "100%" : "-100%",
@@ -94,11 +93,12 @@ export default function SharedModal({
                 className="absolute w-full h-full flex items-center justify-center"
               >
                 <Image
+                  // FIX: v${version} moved AFTER c_scale
                   src={`https://res.cloudinary.com/${
                     process.env.NEXT_PUBLIC_CLOC_NAME ?? process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-                  }/image/upload/${currentImage.version ? `v${currentImage.version}/` : ''}c_scale,${navigation ? "w_1280" : "w_1920"}/${
-                    currentImage.public_id
-                  }.${currentImage.format}`}
+                  }/image/upload/c_scale,${navigation ? "w_1280" : "w_1920"}/${
+                    currentImage.version ? `v${currentImage.version}/` : ''
+                  }${currentImage.public_id}.${currentImage.format}`}
                   fill
                   priority
                   alt="Gallery image"
@@ -115,7 +115,6 @@ export default function SharedModal({
           <div className="flex-grow">
             <div className="space-y-6">
               
-              {/* Group 1: Artist, Location, Contact, About */}
               <div className="space-y-4">
                 <div>
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
@@ -150,7 +149,6 @@ export default function SharedModal({
                 </div>
               </div>
 
-              {/* Group 2: Title, Medium, Size, Status */}
               <div className="space-y-4 pt-4 border-t border-white/10">
                 <div>
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50">Title</h3>
@@ -170,7 +168,6 @@ export default function SharedModal({
                 </div>
               </div>
 
-              {/* Optional Description */}
               {mainImage.context?.description && (
                 <div className="pt-4 border-t border-white/10">
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50">Description</h3>
@@ -180,7 +177,6 @@ export default function SharedModal({
                 </div>
               )}
 
-              {/* Detail Shots Section */}
               {detailShots && detailShots.length > 1 && (
                 <div className="pt-4 border-t border-white/10">
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50 mb-3">Detail Views</h3>
@@ -196,7 +192,8 @@ export default function SharedModal({
                         }`}
                       >
                         <Image
-                          src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${img.version ? `v${img.version}/` : ''}c_fill,w_200,h_200/${img.public_id}.${img.format}`}
+                          // FIX: v${version} moved AFTER c_fill
+                          src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_fill,w_200,h_200/${img.version ? `v${img.version}/` : ''}${img.public_id}.${img.format}`}
                           alt="Detail view"
                           fill
                           className="object-cover"
@@ -209,7 +206,6 @@ export default function SharedModal({
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="mt-6 flex items-center gap-3">
              <button
               onClick={() => closeModal()}
