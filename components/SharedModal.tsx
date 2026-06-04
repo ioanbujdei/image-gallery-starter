@@ -88,7 +88,7 @@ export default function SharedModal({
           <div className="flex items-center justify-center w-10 sm:w-14 z-20 flex-shrink-0">
             {prevImage && (
               <button
-                onClick={() => changePhotoId(prevImage.id, -1)}  
+                onClick={() => changePhotoId(prevImage.id, -1)} // Passes -1
                 className="p-2 sm:p-3 rounded-full bg-white/5 hover:bg-white/20 text-white/50 hover:text-white transition border border-white/10 backdrop-blur-md"
                 title="Previous Painting"
               >
@@ -125,11 +125,11 @@ export default function SharedModal({
             </AnimatePresence>
           </div>
 
-          {/* Right Arrow Panel */}
+         {/* Right Arrow Panel */}
           <div className="flex items-center justify-center w-10 sm:w-14 z-20 flex-shrink-0">
             {nextImage && (
               <button
-                onClick={() => changePhotoId(nextImage.id, 1)}
+                onClick={() => changePhotoId(nextImage.id, 1)} // Passes 1
                 className="p-2 sm:p-3 rounded-full bg-white/5 hover:bg-white/20 text-white/50 hover:text-white transition border border-white/10 backdrop-blur-md"
                 title="Next Painting"
               >
