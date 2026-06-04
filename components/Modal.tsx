@@ -2,6 +2,7 @@ import { Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
+import useKeypress from "react-use-keypress";
 import type { ImageProps } from "../utils/types";
 import SharedModal from "./SharedModal";
 
@@ -12,9 +13,8 @@ export default function Modal({
   images: ImageProps[];
   onClose?: () => void;
 }) {
-  let overlayRef = useRef();
+  let overlayRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-
   const { photoId } = router.query;
   let index = Number(photoId);
 
@@ -23,36 +23,22 @@ export default function Modal({
 
   function handleClose() {
     router.push("/", undefined, { shallow: true });
-    onClose();
+    onClose && onClose();
   }
 
-  function changePhotoId(newVal: number) {
-    const currentImg = images.find(img => img.id === curIndex);
-    const nextImg = images.find(img => img.id === newVal);
-    
-    if (currentImg && nextImg) {
-      // Check alphabetical sequence order to match the thumbnail layout line exactly
-      if (nextImg.public_id.localeCompare(currentImg.public_id) > 0) {
-        setDirection(1);
-      } else {
-        setDirection(-1);
-      }
+  function changePhotoId(newVal: number, newDirection?: number) {
+    if (newDirection !== undefined) {
+      setDirection(newDirection);
     } else {
-      if (newVal > curIndex) {
-        setDirection(1);
-      } else {
-        setDirection(-1);
-      }
+      setDirection(newVal > curIndex ? 1 : -1);
     }
-    
     setCurIndex(newVal);
-
-    router.push(
-      `/?photoId=${newVal}`,
-      `/p/${newVal}`,
-      { shallow: true }
-    );
+    router.push(`/?photoId=${newVal}`, `/p/${newVal}`, { shallow: true });
   }
+
+  useKeypress("Escape", () => {
+    handleClose();
+  });
 
   return (
     <Dialog
