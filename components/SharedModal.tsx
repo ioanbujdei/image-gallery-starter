@@ -1,9 +1,11 @@
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useSwipeable } from "react-swipeable";
 import type { ImageProps, SharedModalProps } from "../utils/types";
 
+// GPU accelerated slide animation variants
 const slideVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? "100%" : "-100%",
@@ -53,22 +55,22 @@ export default function SharedModal({
     )
     .sort((a, b) => a.public_id.localeCompare(b.public_id));
 
+  // Determine the sequence of main paintings for our arrow navigation
+  const mainImages = images?.filter(img => !img.public_id.includes("-detail")) || [];
+  const currentMainIdx = mainImages.findIndex(img => img.public_id === baseId);
+  const prevImage = currentMainIdx > 0 ? mainImages[currentMainIdx - 1] : null;
+  const nextImage = currentMainIdx !== -1 && currentMainIdx < mainImages.length - 1 ? mainImages[currentMainIdx + 1] : null;
+
   useEffect(() => {
     setRevealContact(false);
   }, [index]);
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      const currentIdxInDetails = detailShots?.findIndex(img => img.id === index);
-      if (currentIdxInDetails !== undefined && currentIdxInDetails !== -1 && currentIdxInDetails < detailShots.length - 1) {
-        changePhotoId(detailShots[currentIdxInDetails + 1].id);
-      }
+      if (nextImage) changePhotoId(nextImage.id);
     },
     onSwipedRight: () => {
-      const currentIdxInDetails = detailShots?.findIndex(img => img.id === index);
-      if (currentIdxInDetails !== undefined && currentIdxInDetails > 0) {
-        changePhotoId(detailShots[currentIdxInDetails - 1].id);
-      }
+      if (prevImage) changePhotoId(prevImage.id);
     },
     trackMouse: true,
   });
@@ -79,9 +81,24 @@ export default function SharedModal({
         className="relative z-50 flex h-full w-full max-w-7xl flex-col wide:flex-row items-center justify-center overflow-hidden"
         {...handlers}
       >
-        {/* Left Side: Large Image Area */}
-        <div className="relative flex-grow h-1/2 wide:h-full w-full wide:w-3/4 overflow-hidden flex items-center justify-center p-4">
-          <div className="relative h-full w-full flex items-center justify-center">
+        {/* Left Side: Large Image Area with Nav Arrows */}
+        <div className="relative flex-grow h-1/2 wide:h-full w-full wide:w-3/4 overflow-hidden flex flex-row items-center justify-between p-2 sm:p-4">
+          
+          {/* Left Arrow Panel */}
+          <div className="flex items-center justify-center w-10 sm:w-14 z-20 flex-shrink-0">
+            {prevImage && (
+              <button
+                onClick={() => changePhotoId(prevImage.id)}
+                className="p-2 sm:p-3 rounded-full bg-white/5 hover:bg-white/20 text-white/50 hover:text-white transition border border-white/10 backdrop-blur-md"
+                title="Previous Painting"
+              >
+                <ChevronLeftIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
+          </div>
+
+          {/* Center Image Container */}
+          <div className="relative h-full w-full flex-grow flex items-center justify-center overflow-hidden px-2">
             <AnimatePresence initial={false} custom={direction} mode="popLayout">
               <motion.div
                 key={index}
@@ -93,7 +110,6 @@ export default function SharedModal({
                 className="absolute w-full h-full flex items-center justify-center"
               >
                 <Image
-                  // FIX: v${version} moved AFTER c_scale
                   src={`https://res.cloudinary.com/${
                     process.env.NEXT_PUBLIC_CLOC_NAME ?? process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
                   }/image/upload/c_scale,${navigation ? "w_1280" : "w_1920"}/${
@@ -108,6 +124,19 @@ export default function SharedModal({
               </motion.div>
             </AnimatePresence>
           </div>
+
+          {/* Right Arrow Panel */}
+          <div className="flex items-center justify-center w-10 sm:w-14 z-20 flex-shrink-0">
+            {nextImage && (
+              <button
+                onClick={() => changePhotoId(nextImage.id)}
+                className="p-2 sm:p-3 rounded-full bg-white/5 hover:bg-white/20 text-white/50 hover:text-white transition border border-white/10 backdrop-blur-md"
+                title="Next Painting"
+              >
+                <ChevronRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Right Side: Details Panel */}
@@ -115,6 +144,7 @@ export default function SharedModal({
           <div className="flex-grow">
             <div className="space-y-6">
               
+              {/* Group 1: Artist, Location, Contact, About */}
               <div className="space-y-4">
                 <div>
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50">Artist</h3>
@@ -149,6 +179,7 @@ export default function SharedModal({
                 </div>
               </div>
 
+              {/* Group 2: Title, Medium, Size, Status */}
               <div className="space-y-4 pt-4 border-t border-white/10">
                 <div>
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50">Title</h3>
@@ -168,6 +199,7 @@ export default function SharedModal({
                 </div>
               </div>
 
+              {/* Optional Description */}
               {mainImage.context?.description && (
                 <div className="pt-4 border-t border-white/10">
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50">Description</h3>
@@ -177,6 +209,7 @@ export default function SharedModal({
                 </div>
               )}
 
+              {/* Detail Shots Section */}
               {detailShots && detailShots.length > 1 && (
                 <div className="pt-4 border-t border-white/10">
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50 mb-3">Detail Views</h3>
@@ -192,7 +225,6 @@ export default function SharedModal({
                         }`}
                       >
                         <Image
-                          // FIX: v${version} moved AFTER c_fill
                           src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_fill,w_200,h_200/${img.version ? `v${img.version}/` : ''}${img.public_id}.${img.format}`}
                           alt="Detail view"
                           fill
@@ -206,6 +238,7 @@ export default function SharedModal({
             </div>
           </div>
 
+          {/* Action Buttons */}
           <div className="mt-6 flex items-center gap-3">
              <button
               onClick={() => closeModal()}
