@@ -40,9 +40,11 @@ export default function Carousel({
     router.push("/", undefined, { shallow: true });
   }
 
-  function changePhotoId(newVal: number) {
-    // Calculate animation slide direction based on alphabetical image sort
-    if (images) {
+function changePhotoId(newVal: number, newDirection?: number) {
+    if (newDirection) {
+      setDirection(newDirection);
+    } else if (images) {
+      // Keep existing logic here...
       const currentImg = images.find((img) => img.id === index);
       const nextImg = images.find((img) => img.id === newVal);
       
