@@ -33,7 +33,6 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
     <>
       <Head>
         <title>Alpha.1 Exhibition</title>
-        {/* Replace these URLs with your preferred thumbnail link */}
         <meta
           property="og:image"
           content="https://image-gallery-starter-2f4eg0k3q-truepaintings-projects.vercel.app/_next/image?url=%2Falpha-logo.png&w=640&q=75"
@@ -87,7 +86,6 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
               <Image
                 alt="Painting"
                 className="max-h-full max-w-full object-contain transition duration-300 group-hover:scale-105 group-hover:brightness-110"
-                // FIX: v${version} moved AFTER c_limit
                 src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_limit,w_720,h_720/${version ? `v${version}/` : ''}${public_id}.${format}`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, (max-width: 1536px) 33vw, 25vw"
@@ -109,17 +107,16 @@ export default Home;
 export async function getStaticProps() {
   const results = await cloudinary.v2.search
     .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
-    .sort_by("context.order", "asc") 
+    .sort_by("public_id", "desc") // Reverted to fix the 400 error
     .max_results(400)
     .with_field('context')
     .execute();
     
   let reducedResults: ImageProps[] = [];
 
-  let i = 0;
   for (let result of results.resources) {
     reducedResults.push({
-      id: i,
+      id: 0, // Placeholder, we fix this after sorting
       height: result.height,
       width: result.width,
       public_id: result.public_id,
@@ -127,10 +124,22 @@ export async function getStaticProps() {
       version: result.version ? result.version.toString() : "", 
       context: result.context || {}, 
     });
-    i++;
   }
 
-  const blurImagePromises = results.resources.map((image: ImageProps) => {
+  // JAVASCRIPT CUSTOM SORTING
+  reducedResults.sort((a, b) => {
+    const orderA = a.context?.order ? parseInt(a.context.order, 10) : 999;
+    const orderB = b.context?.order ? parseInt(b.context.order, 10) : 999;
+    return orderA - orderB;
+  });
+
+  // Re-assign IDs sequentially so the arrows don't break
+  reducedResults = reducedResults.map((img, index) => ({
+    ...img,
+    id: index
+  }));
+
+  const blurImagePromises = reducedResults.map((image: ImageProps) => {
     return getBase64ImageUrl(image);
   });
   const imagesWithBlurDataUrls = await Promise.all(blurImagePromises);
