@@ -8,10 +8,11 @@ export interface ImageProps {
   blurDataUrl?: string;
   version?: string; // Tracks upload version for cache-busting
   context?: {
+    order?: string; // <-- Added this line to fix the TypeScript error
     artist?: string;
     location?: string;
     contact?: string;
-    about?: string; // Added about tag
+    about?: string; 
     title?: string;
     medium?: string;
     size?: string;
