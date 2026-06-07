@@ -12,7 +12,6 @@ const Home: NextPage = ({ currentPhoto, images }: { currentPhoto: ImageProps, im
   const { photoId } = router.query;
   let index = Number(photoId);
 
-  // FIX: v${version} moved AFTER c_scale
   const currentPhotoUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_scale,w_2560/${currentPhoto.version ? `v${currentPhoto.version}/` : ''}${currentPhoto.public_id}.${currentPhoto.format}`;
 
   return (
@@ -35,10 +34,9 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const results = await getResults();
 
   let reducedResults: ImageProps[] = [];
-  let i = 0;
   for (let result of results.resources) {
     reducedResults.push({
-      id: i,
+      id: 0, // Placeholder
       height: result.height,
       width: result.width,
       public_id: result.public_id,
@@ -46,8 +44,20 @@ export const getStaticProps: GetStaticProps = async (context) => {
       version: result.version ? result.version.toString() : "",
       context: result.context || {}, 
     });
-    i++;
   }
+
+  // JAVASCRIPT CUSTOM SORTING
+  reducedResults.sort((a, b) => {
+    const orderA = a.context?.order ? parseInt(a.context.order, 10) : 999;
+    const orderB = b.context?.order ? parseInt(b.context.order, 10) : 999;
+    return orderA - orderB;
+  });
+
+  // Re-assign IDs
+  reducedResults = reducedResults.map((img, index) => ({
+    ...img,
+    id: index
+  }));
 
   const currentPhoto = reducedResults.find(
     (img) => img.id === Number(context?.params?.photoId),
@@ -69,7 +79,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 export async function getStaticPaths() {
   const results = await cloudinary.v2.search
     .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
-    .sort_by("context.order", "asc")
+    .sort_by("public_id", "desc") // Reverted to fix the 400 error
     .max_results(400)
     .execute();
 
