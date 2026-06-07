@@ -49,13 +49,14 @@ export default function SharedModal({
   
   const mainImage = images?.find((img) => img.public_id === baseId) || currentImage;
 
+  // Detail shots sorted strictly alphabetically
   const detailShots = images
     ?.filter((img) => 
       img.public_id === baseId || img.public_id.startsWith(baseId + "-detail")
     )
     .sort((a, b) => a.public_id.localeCompare(b.public_id));
 
-  // Determine the sequence of main paintings for our arrow navigation
+  // Main paintings sorted based on your index.js custom ordering
   const mainImages = images?.filter(img => !img.public_id.includes("-detail")) || [];
   const currentMainIdx = mainImages.findIndex(img => img.public_id === baseId);
   const prevImage = currentMainIdx > 0 ? mainImages[currentMainIdx - 1] : null;
@@ -67,10 +68,12 @@ export default function SharedModal({
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      if (nextImage) changePhotoId(nextImage.id);
+      // Force slide direction 1 when swiping
+      if (nextImage) changePhotoId(nextImage.id, 1);
     },
     onSwipedRight: () => {
-      if (prevImage) changePhotoId(prevImage.id);
+      // Force slide direction -1 when swiping
+      if (prevImage) changePhotoId(prevImage.id, -1);
     },
     trackMouse: true,
   });
@@ -88,7 +91,7 @@ export default function SharedModal({
           <div className="flex items-center justify-center w-10 sm:w-14 z-20 flex-shrink-0">
             {prevImage && (
               <button
-                onClick={() => changePhotoId(prevImage.id, -1)} // Passes -1
+                onClick={() => changePhotoId(prevImage.id, -1)}
                 className="p-2 sm:p-3 rounded-full bg-white/5 hover:bg-white/20 text-white/50 hover:text-white transition border border-white/10 backdrop-blur-md"
                 title="Previous Painting"
               >
@@ -125,11 +128,11 @@ export default function SharedModal({
             </AnimatePresence>
           </div>
 
-         {/* Right Arrow Panel */}
+          {/* Right Arrow Panel */}
           <div className="flex items-center justify-center w-10 sm:w-14 z-20 flex-shrink-0">
             {nextImage && (
               <button
-                onClick={() => changePhotoId(nextImage.id, 1)} // Passes 1
+                onClick={() => changePhotoId(nextImage.id, 1)}
                 className="p-2 sm:p-3 rounded-full bg-white/5 hover:bg-white/20 text-white/50 hover:text-white transition border border-white/10 backdrop-blur-md"
                 title="Next Painting"
               >
@@ -214,24 +217,34 @@ export default function SharedModal({
                 <div className="pt-4 border-t border-white/10">
                   <h3 className="text-[10px] uppercase tracking-widest text-white/50 mb-3">Detail Views</h3>
                   <div className="grid grid-cols-3 gap-2">
-                    {detailShots.map((img) => (
-                      <button
-                        key={img.id}
-                        onClick={() => changePhotoId(img.id)}
-                        className={`relative aspect-square overflow-hidden rounded-md border transition ${
-                          img.id === index
-                            ? "border-white ring-2 ring-white/40 bg-white/10 scale-95"
-                            : "border-white/10 hover:border-white/40"
-                        }`}
-                      >
-                        <Image
-                          src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_fill,w_200,h_200/${img.version ? `v${img.version}/` : ''}${img.public_id}.${img.format}`}
-                          alt="Detail view"
-                          fill
-                          className="object-cover"
-                        />
-                      </button>
-                    ))}
+                    {detailShots.map((img, detailIndex) => {
+                      // Find where the currently active image sits in the alphabetical detail shot list
+                      const currentActiveDetailIndex = detailShots.findIndex(d => d.id === index);
+                      
+                      return (
+                        <button
+                          key={img.id}
+                          onClick={() => {
+                            // Compare the clicked thumbnail's position to the current image's position
+                            // to perfectly guarantee the slide animation goes the correct way.
+                            const slideDirection = detailIndex > currentActiveDetailIndex ? 1 : -1;
+                            changePhotoId(img.id, slideDirection);
+                          }}
+                          className={`relative aspect-square overflow-hidden rounded-md border transition ${
+                            img.id === index
+                              ? "border-white ring-2 ring-white/40 bg-white/10 scale-95"
+                              : "border-white/10 hover:border-white/40"
+                          }`}
+                        >
+                          <Image
+                            src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_fill,w_200,h_200/${img.version ? `v${img.version}/` : ''}${img.public_id}.${img.format}`}
+                            alt="Detail view"
+                            fill
+                            className="object-cover"
+                          />
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
