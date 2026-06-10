@@ -71,11 +71,6 @@ const Home: NextPage = ({ images }: { images: ImageProps[] }) => {
             >
               Alpha.1 Exhibition
             </h1>
-            
-            {/* Added Opening Date Here */}
-            <p className="mt-1 text-xs font-medium uppercase tracking-widest text-white/60">
-              Opening 10 June 2026
-            </p>
           </div>
 
           {/* Painting Grid Items */}
@@ -121,7 +116,7 @@ export async function getStaticProps() {
 
   for (let result of results.resources) {
     reducedResults.push({
-      id: 0, // Placeholder
+      id: 0, 
       height: result.height,
       width: result.width,
       public_id: result.public_id,
