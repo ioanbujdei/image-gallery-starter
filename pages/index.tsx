@@ -33,20 +33,20 @@ const Home: NextPage = () => (
           >
             Alpha.2 Exhibition
           </h1>
-          <Link
-            href="/archive"
-            className="mt-2 text-sm uppercase underline underline-offset-4 hover:text-white/70"
-          >
-            Archive
-          </Link>
-          <p className="text-xs text-white/70">
-            Alpha.1 Exhibition opened: DD.MM.YYYY
+          <p className="text-sm uppercase tracking-[0.15em] text-white/80">
+              Opened: DD.MM.YYYY
           </p>
         </div>
       </div>
     </main>
-    <footer className="p-6 text-center text-white/80 sm:p-12">
-      A project of the Paul-talk Discord server.
+    <footer className="flex flex-col items-center gap-4 p-6 text-center text-white/80 sm:p-12">
+      <Link
+        href="/archive"
+        className="rounded-full border border-white/25 px-4 py-2 text-xs uppercase tracking-[0.18em] transition-colors hover:border-white/50 hover:bg-white/10 hover:text-white"
+      >
+        Archive
+      </Link>
+      <p>A project of the Paul-talk Discord server.</p>
     </footer>
   </>
 );

@@ -39,6 +39,15 @@ const Archive: NextPage = ({ images }: { images: ImageProps[] }) => {
             >
               Alpha.1 Exhibition
             </h1>
+            <p className="text-sm uppercase tracking-[0.15em] text-white/80">
+              Opened: 15th June 2026
+            </p>
+            <Link
+              href="/"
+              className="mt-2 rounded-full border border-white/25 px-4 py-2 text-xs uppercase tracking-[0.18em] transition-colors hover:border-white/50 hover:bg-white/10 hover:text-white"
+            >
+              Return To Current Exhibition
+            </Link>
           </div>
 
           {mainImages.map(({ id, public_id, format, version }) => (
