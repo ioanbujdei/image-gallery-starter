@@ -9,10 +9,12 @@ export default function Carousel({
   index,
   currentPhoto,
   images,
+  photoPathPrefix = "",
 }: {
   index: number;
   currentPhoto: ImageProps;
   images: ImageProps[];
+  photoPathPrefix?: string;
 }) {
   const router = useRouter();
   const [, setLastViewedPhoto] = useLastViewedPhoto();
@@ -40,7 +42,7 @@ export default function Carousel({
     } else {
       setDirection(newVal > index ? 1 : -1);
     }
-    router.push(`/p/${newVal}`, undefined, { shallow: true });
+    router.push(`/p/${photoPathPrefix}${newVal}`, undefined, { shallow: true });
   }
 
   useKeypress("Escape", () => {

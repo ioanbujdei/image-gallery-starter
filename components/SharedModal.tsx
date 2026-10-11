@@ -80,12 +80,12 @@ export default function SharedModal({
 
   return (
     <MotionConfig>
-      <div
-        className="relative z-50 flex h-full w-full max-w-7xl flex-col wide:flex-row items-center justify-center overflow-hidden"
-        {...handlers}
-      >
+      <div className="relative z-50 flex h-full w-full max-w-7xl flex-col wide:flex-row items-center justify-center overflow-hidden">
         {/* Left Side: Large Image Area with Nav Arrows */}
-        <div className="relative flex-grow h-1/2 wide:h-full w-full wide:w-3/4 overflow-hidden flex flex-row items-center justify-between p-2 sm:p-4">
+        <div
+          className="relative flex-grow h-1/2 wide:h-full w-full wide:w-3/4 overflow-hidden flex flex-row items-center justify-between p-2 sm:p-4"
+          {...handlers}
+        >
           
           {/* Left Arrow Panel */}
           <div className="flex items-center justify-center w-10 sm:w-14 z-20 flex-shrink-0">

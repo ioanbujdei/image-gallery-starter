@@ -7,10 +7,16 @@ import cloudinary from "../../utils/cloudinary";
 import getBase64ImageUrl from "../../utils/generateBlurPlaceholder";
 import type { ImageProps } from "../../utils/types";
 
-const Home: NextPage = ({ currentPhoto, images }: { currentPhoto: ImageProps, images: ImageProps[] }) => {
+const Home: NextPage<{
+  currentPhoto: ImageProps;
+  images: ImageProps[];
+  photoPathPrefix: string;
+}> = ({ currentPhoto, images, photoPathPrefix }) => {
   const router = useRouter();
   const { photoId } = router.query;
-  let index = Number(photoId);
+  const index = Number(
+    photoPathPrefix ? String(photoId).slice(photoPathPrefix.length) : photoId,
+  );
 
   const currentPhotoUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_scale,w_2560/${currentPhoto.version ? `v${currentPhoto.version}/` : ''}${currentPhoto.public_id}.${currentPhoto.format}`;
 
@@ -22,7 +28,12 @@ const Home: NextPage = ({ currentPhoto, images }: { currentPhoto: ImageProps, im
         <meta name="twitter:image" content={currentPhotoUrl} />
       </Head>
       <main className="mx-auto max-w-[1960px] p-4">
-        <Carousel currentPhoto={currentPhoto} index={index} images={images} />
+        <Carousel
+          currentPhoto={currentPhoto}
+          index={index}
+          images={images}
+          photoPathPrefix={photoPathPrefix}
+        />
       </main>
     </>
   );
@@ -31,7 +42,14 @@ const Home: NextPage = ({ currentPhoto, images }: { currentPhoto: ImageProps, im
 export default Home;
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const results = await getResults();
+  const pathPhotoId = String(context.params?.photoId);
+  const photoPathPrefix = pathPhotoId.startsWith("exhibition2-")
+    ? "exhibition2-"
+    : "";
+  const photoId = photoPathPrefix
+    ? pathPhotoId.slice(photoPathPrefix.length)
+    : pathPhotoId;
+  const results = await getResults(photoPathPrefix ? "Exhibition2" : "");
 
   let reducedResults: ImageProps[] = [];
   for (let result of results.resources) {
@@ -60,7 +78,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   }));
 
   const currentPhoto = reducedResults.find(
-    (img) => img.id === Number(context?.params?.photoId),
+    (img) => img.id === Number(photoId),
   );
   
   if (currentPhoto) {
@@ -70,22 +88,33 @@ export const getStaticProps: GetStaticProps = async (context) => {
   return {
     props: {
       currentPhoto: currentPhoto || null,
-      images: reducedResults, 
+      images: reducedResults,
+      photoPathPrefix,
     },
     revalidate: 60,
   };
 };
 
 export async function getStaticPaths() {
-  const results = await cloudinary.v2.search
-    .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
-    .sort_by("public_id", "desc") // Reverted to fix the 400 error
-    .max_results(400)
-    .execute();
+  const [archiveResults, exhibitionResults] = await Promise.all([
+    cloudinary.v2.search
+      .expression(`folder:${process.env.CLOUDINARY_FOLDER}`)
+      .sort_by("public_id", "desc")
+      .max_results(400)
+      .execute(),
+    cloudinary.v2.search
+      .expression(`folder:${process.env.CLOUDINARY_FOLDER}/Exhibition2/*`)
+      .sort_by("public_id", "desc")
+      .max_results(400)
+      .execute(),
+  ]);
 
-  let fullPaths = [];
-  for (let i = 0; i < results.resources.length; i++) {
+  const fullPaths = [];
+  for (let i = 0; i < archiveResults.resources.length; i++) {
     fullPaths.push({ params: { photoId: i.toString() } });
+  }
+  for (let i = 0; i < exhibitionResults.resources.length; i++) {
+    fullPaths.push({ params: { photoId: `exhibition2-${i}` } });
   }
 
   return {

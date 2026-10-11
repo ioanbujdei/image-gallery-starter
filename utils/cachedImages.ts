@@ -1,18 +1,22 @@
 import cloudinary from "./cloudinary";
 
-let cachedResults: any;
+const cachedResults: Record<string, any> = {};
 
-export default async function getResults() {
-  if (!cachedResults) {
+export default async function getResults(subfolder = "") {
+  if (!cachedResults[subfolder]) {
+    const folder = subfolder
+      ? `${process.env.CLOUDINARY_FOLDER}/${subfolder}`
+      : process.env.CLOUDINARY_FOLDER;
+    const expression = subfolder ? `folder:${folder}/*` : `folder:${folder}`;
     const fetchedResults = await cloudinary.v2.search
-      .expression(`folder:${process.env.CLOUDINARY_FOLDER}/*`)
-      .sort_by("public_id", "desc") // Reverted to fix the 400 error
+      .expression(expression)
+      .sort_by("public_id", "desc")
       .max_results(400)
-      .with_field('context')
+      .with_field("context")
       .execute();
 
-    cachedResults = fetchedResults;
+    cachedResults[subfolder] = fetchedResults;
   }
 
-  return cachedResults;
+  return cachedResults[subfolder];
 }
