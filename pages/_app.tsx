@@ -17,10 +17,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     setIsClient(true);
 
-    // Target Date: June 15, 2026 at 18:00 (6:00 PM) GMT
+    // Target Date: October 29, 2026 at 18:00 (6:00 PM) GMT
     // In JavaScript, Date.UTC(year, monthIndex, day, hour, minute, second)
     // Month is 0-indexed, so June is 5.
-    const openingDate = Date.UTC(2026, 5, 15, 18, 0, 0);
+    const openingDate = Date.UTC(2026, 9, 29, 18, 0, 0);
 
     const checkTime = () => {
       const now = new Date().getTime();
@@ -60,7 +60,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     return (
       <>
         <Head>
-          <title>Alpha.1 Exhibition - Coming Soon</title>
+          <title>Alpha.2 Exhibition - Coming Soon</title>
         </Head>
         <main className="flex min-h-screen flex-col items-center justify-center bg-black p-4">
           <div className="relative flex w-full max-w-lg flex-col items-center justify-center gap-8 overflow-hidden rounded-lg bg-white/5 p-12 text-center text-white shadow-highlight border border-white/10 backdrop-blur-md">
@@ -78,7 +78,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
               className="text-2xl sm:text-3xl font-medium uppercase tracking-[0.2em]"
               style={{ fontFamily: 'Times New Roman, Times, serif' }}
             >
-              Alpha.1 Exhibition
+              Alpha.2 Exhibition
             </h1>
             
             <div className="h-px w-16 bg-white/20" />
@@ -121,7 +121,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             </div>
             
             <p className="mt-4 text-[11px] uppercase tracking-widest text-white/40">
-              15 June 2026 • 18:00 GMT
+              29 October 2026 • 18:00 GMT
             </p>
 
           </div>

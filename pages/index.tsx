@@ -40,7 +40,7 @@ const Home: NextPage<{ images: ImageProps[] }> = ({ images }) => {
               Alpha.2 Exhibition
             </h1>
             <p className="text-sm uppercase tracking-[0.15em] text-white/80">
-              Opened: DD.MM.YYYY
+              Opened: 29th October 2026
             </p>
           </div>
 
