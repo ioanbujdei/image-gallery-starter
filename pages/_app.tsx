@@ -1,10 +1,12 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import "../styles/index.css";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter();
   const [isLocked, setIsLocked] = useState(true);
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -17,10 +19,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     setIsClient(true);
 
-    // Target Date: October 29, 2026 at 18:00 (6:00 PM) GMT
+    // Target Date: November 3, 2026 at 20:00 (8:00 PM) GMT
     // In JavaScript, Date.UTC(year, monthIndex, day, hour, minute, second)
-    // Month is 0-indexed, so June is 5.
-    const openingDate = Date.UTC(2026, 9, 29, 18, 0, 0);
+    // Month is 0-indexed, so November is 10.
+    const openingDate = Date.UTC(2026, 10, 3, 20, 0, 0);
 
     const checkTime = () => {
       const now = new Date().getTime();
@@ -55,8 +57,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   // before the date, set NEXT_PUBLIC_SITE_LOCKED="false" in Vercel.
   // Otherwise, the timer takes control.
   const isManuallyUnlocked = process.env.NEXT_PUBLIC_SITE_LOCKED === "false";
+  const isRevealRoute = router.asPath.split(/[?#]/, 1)[0] === "/reveal";
 
-  if (isLocked && !isManuallyUnlocked) {
+  if (isLocked && !isManuallyUnlocked && !isRevealRoute) {
     return (
       <>
         <Head>
@@ -121,7 +124,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             </div>
             
             <p className="mt-4 text-[11px] uppercase tracking-widest text-white/40">
-              29 October 2026 • 18:00 GMT
+              3 November 2026 • 20:00 GMT
             </p>
 
           </div>

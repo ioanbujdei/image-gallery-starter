@@ -1,4 +1,7 @@
 module.exports = {
+  async rewrites() {
+    return [{ source: "/reveal", destination: "/" }];
+  },
   images: {
     remotePatterns: [
       {
