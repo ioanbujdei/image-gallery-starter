@@ -3,7 +3,6 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import cloudinary from "../utils/cloudinary";
-import getBase64ImageUrl from "../utils/generateBlurPlaceholder";
 import type { ImageProps } from "../utils/types";
 
 const Archive: NextPage = ({ images }: { images: ImageProps[] }) => {
@@ -113,15 +112,6 @@ export async function getStaticProps() {
     ...image,
     id: index,
   }));
-
-  const blurImagePromises = reducedResults.map((image) =>
-    getBase64ImageUrl(image),
-  );
-  const imagesWithBlurDataUrls = await Promise.all(blurImagePromises);
-
-  for (let index = 0; index < reducedResults.length; index++) {
-    reducedResults[index].blurDataUrl = imagesWithBlurDataUrls[index];
-  }
 
   return {
     props: {
